@@ -177,8 +177,17 @@
     <header class="bg-mist/80 dark:bg-darkcard/80 backdrop-blur border-b border-sage/50 dark:border-darkborder sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-forest to-moss dark:from-moss dark:to-darkborder flex items-center justify-center text-cream font-bold text-xl shadow-lg shadow-forest/15">
-                    <i class="fa-solid fa-brain"></i>
+                <!-- LOGO: la misma imagen del avatar (assets/kaia.png) en pequeño.
+                     Tamaño: cambia w-9 h-9 (36 px) por w-10 h-10, w-11 h-11, etc.
+                     Si todavía no existe la imagen, se muestra el cerebro de antes. -->
+                <div class="w-9 h-9 shrink-0 flex items-center justify-center">
+                    <img id="logo-img" src="assets/kaia.png" alt="Kaia" class="w-full h-full object-contain drop-shadow" draggable="false"
+                         onerror="this.classList.add('hidden'); document.getElementById('logo-fallback').classList.remove('hidden');">
+                    <div id="logo-fallback" class="hidden">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-forest to-moss dark:from-moss dark:to-darkborder flex items-center justify-center text-cream font-bold text-xl shadow-lg shadow-forest/15">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <span class="text-xl font-bold tracking-tight text-forest dark:text-darktext">Kaia</span>
@@ -930,11 +939,32 @@
             container.scrollTop = container.scrollHeight;
         }
 
+        // ¿El mensaje corto es la respuesta a "¿reanudar o empezar de cero?"? Devuelve 'resume', 'new' o null.
+        // Es deliberadamente estricto con "new" (borra lo guardado) para no confundirlo con un mensaje normal.
+        function detectResumeChoice(text) {
+            const t = (text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+            if (t.length > 40) return null;
+            if (/\b(de cero|desde cero|nuevo chat|chat nuevo|nueva conversacion|conversacion nueva|empezar de nuevo|empecemos de nuevo)\b/.test(t)) return 'new';
+            if (/\b(reanud\w*|retom\w*|continuar|continuemos|seguimos|sigamos|donde (lo )?dejamos)\b/.test(t)) return 'resume';
+            return null;
+        }
+
         async function processUserMessage(userMsg) {
             if (isWaitingReply) return;
             isWaitingReply = true;
             await persistenceReady;
-            if (pendingResumeHistory) resumeChat();
+            if (pendingResumeHistory) {
+                // La pregunta de reanudar también se puede contestar escribiendo ("reanudar", "de cero").
+                // Si la persona escribe otra cosa sin elegir, se empieza una conversación NUEVA.
+                const choice = detectResumeChoice(userMsg);
+                if (choice === 'resume') resumeChat();
+                else startNewChat();
+                if (choice) {
+                    isWaitingReply = false;
+                    updateOrbState('calm', 'Kaia está lista', 'Presiona el micrófono o escribe para conversar.');
+                    return; // era la respuesta a la pregunta, no un mensaje para la IA
+                }
+            }
 
             appendChatMessage('user', userMsg);
             chatHistory.push({ role: 'user', content: userMsg });
