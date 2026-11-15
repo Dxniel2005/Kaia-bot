@@ -1038,20 +1038,59 @@
             ]);
         }
 
-        function deconstructTask() {
-            const taskInput = document.getElementById('task-input');
-            const task = taskInput.value.trim();
-            if (!task) return;
+        async function deconstructTask() {
+    const taskInput = document.getElementById('task-input');
+    const task = taskInput.value.trim();
+    if (!task) return;
 
-            const container = document.getElementById('subtasks-container');
-            container.innerHTML = '';
+    const container = document.getElementById('subtasks-container');
+    container.innerHTML = `
+        <div class="text-center py-8 text-forest-soft dark:text-darkmuted">
+            <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-moss"></i>
+            <p class="text-sm">Kaia está pensando los pasos a pasos de tortuga...</p>
+        </div>
+    `;
 
-            const subtasks = [
-                { title: "Definir alcance y estructura inicial", time: "15 min", icon: "fa-compass" },
-                { title: "Recopilar fuentes e información clave", time: "25 min", icon: "fa-book-open" },
-                { title: "Redactar primer borrador / esquema básico", time: "35 min", icon: "fa-pen-to-square" },
-                { title: "Revisión breve y ajuste de detalles finales", time: "15 min", icon: "fa-check-double" }
-            ];
+    try {
+        const res = await fetch('/api/deconstruct', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ task })
+        });
+
+        if (!res.ok) throw new Error('Error en el servidor');
+        const data = await res.json();
+        const subtasks = data.steps || [];
+
+        container.innerHTML = '';
+        if (!subtasks.length) {
+            container.innerHTML = '<p class="text-sm text-center text-forest-soft dark:text-darkmuted">No se pudieron generar los pasos. Intenta de nuevo.</p>';
+            return;
+        }
+
+        const icons = ['fa-compass', 'fa-book-open', 'fa-pen-to-square', 'fa-check-double', 'fa-star'];
+
+        subtasks.forEach((item, index) => {
+            const el = document.createElement('div');
+            el.className = 'flex items-center justify-between p-3.5 bg-cream dark:bg-darkbg border border-sage/70 dark:border-darkborder rounded-xl hover:border-moss/60 transition-all';
+            el.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" class="w-4 h-4 accent-moss rounded cursor-pointer">
+                    <i class="fa-solid ${icons[index % icons.length]} text-moss text-sm"></i>
+                    <span class="text-sm font-medium text-forest dark:text-darktext">${index + 1}. ${item.title}</span>
+                </div>
+                <span class="text-xs bg-mist dark:bg-darkborder text-forest dark:text-darktext border border-moss/40 px-2.5 py-1 rounded-md font-mono">${item.time || '15 min'}</span>
+            `;
+            container.appendChild(el);
+        });
+
+        document.getElementById('task-count-badge').innerText = subtasks.length + ' Pasos Sugeridos';
+        speakText(`Listo, ya desglosé tu idea a pasos de tortuga.`);
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = '<p class="text-sm text-center text-rose-600 dark:text-rose-400">Ocurrió un error al conectar con Kaia.</p>';
+    }
+}
 
             subtasks.forEach((item, index) => {
                 const el = document.createElement('div');
