@@ -1059,7 +1059,11 @@
             body: JSON.stringify({ task })
         });
 
-        if (!res.ok) throw new Error('Error en el servidor');
+        if (!res.ok) {
+            let msg = 'Error en el servidor';
+            try { const e = await res.json(); if (e && e.error) msg = e.error; } catch (err) { /* sin detalle */ }
+            throw new Error(msg);
+        }
         const data = await res.json();
         const subtasks = data.steps || [];
 
@@ -1089,7 +1093,7 @@
         speakText(`Listo, ya desglosé tu idea a pasos de tortuga.`);
     } catch (err) {
         console.error(err);
-        container.innerHTML = '<p class="text-sm text-center text-rose-600 dark:text-rose-400">Ocurrió un error al conectar con Kaia.</p>';
+        container.innerHTML = '<p class="text-sm text-center text-rose-600 dark:text-rose-400">Ocurrió un error al conectar con Kaia.<br><span class="text-xs">' + escapeHtml(err.message || '') + '</span></p>';
     }
 }
 

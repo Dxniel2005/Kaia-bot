@@ -128,35 +128,94 @@ async function handleChat(req, res) {
     }
 }
 
+// Convierte la respuesta del modelo en una lista de pasos válida.
+// Acepta: arreglo JSON, objeto { steps: [...] }, o JSON rodeado de ```json ... ``` / texto extra.
+function extractSteps(text) {
+    const t = String(text || '').replace(/```json/gi, '').replace(/```/g, '').trim();
+    const tryParse = (str) => { try { return JSON.parse(str); } catch (e) { return null; } };
+
+    let data = tryParse(t);
+    if (!data) {
+        const a = t.indexOf('['), b = t.lastIndexOf(']');
+        if (a !== -1 && b > a) data = tryParse(t.slice(a, b + 1));
+    }
+    if (data && !Array.isArray(data) && Array.isArray(data.steps)) data = data.steps;
+    if (!Array.isArray(data)) return [];
+
+    return data
+        .filter(st => st && typeof st.title === 'string' && st.title.trim())
+        .slice(0, 6)
+        .map(st => ({
+            title: st.title.trim().slice(0, 200),
+            time: typeof st.time === 'string' && st.time.trim() ? st.time.trim().slice(0, 30) : '15 min'
+        }));
+}
+
+// Llama a Gemini para el desglose. Devuelve { steps } o { status, error }; reintenta una vez si hay un fallo pasajero.
+async function requestSteps(prompt) {
+    let last = { status: 502, error: 'El modelo no respondió. Inténtalo de nuevo.' };
+
+    for (let attempt = 1; attempt <= 2; attempt++) {
+        let upstream;
+        try {
+            upstream = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-goog-api-key': API_KEY },
+                body: JSON.stringify({
+                    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        maxOutputTokens: 1024,
+                        temperature: 0.6,
+                        responseMimeType: 'application/json', // pide JSON directo, sin markdown
+                        // Gemini 2.5 Flash "piensa" antes de responder y esos tokens cuentan: sin esto podía quedarse sin texto
+                        ...(/2\.5-flash/.test(MODEL) ? { thinkingConfig: { thinkingBudget: 0 } } : {})
+                    }
+                })
+            });
+        } catch (err) {
+            console.error(`Desglose (intento ${attempt}): no pude contactar a Gemini:`, err.message);
+            last = { status: 502, error: 'No pude contactar al modelo. Revisa tu conexión.' };
+            continue;
+        }
+
+        if (!upstream.ok) {
+            const detail = (await upstream.text()).slice(0, 500);
+            console.error(`Desglose (intento ${attempt}): Gemini respondió ${upstream.status}:`, detail);
+            if (upstream.status === 429) {
+                return { status: 429, error: 'Se alcanzó el límite del servicio gratuito. Espera un minuto e inténtalo de nuevo.' };
+            }
+            last = { status: 502, error: 'El modelo no respondió. Inténtalo de nuevo.' };
+            if (upstream.status >= 500 && attempt === 1) { await new Promise(r => setTimeout(r, 800)); continue; }
+            return last;
+        }
+
+        const data = await upstream.json();
+        const cand = data.candidates && data.candidates[0];
+        const text = ((cand && cand.content && cand.content.parts) || []).map(p => p.text || '').join('');
+        const steps = extractSteps(text);
+        if (steps.length) return { steps };
+
+        console.warn(`Desglose (intento ${attempt}) sin pasos. finishReason: ${cand && cand.finishReason} | bloqueo: ${(data.promptFeedback && data.promptFeedback.blockReason) || 'ninguno'} | texto recibido: ${JSON.stringify(text.slice(0, 200))}`);
+        last = { status: 502, error: 'El modelo no devolvió pasos válidos. Inténtalo de nuevo.' };
+    }
+    return last;
+}
+
 async function handleDeconstruct(req, res) {
     if (!API_KEY) return sendJson(res, 503, { error: 'Falta GEMINI_API_KEY.' });
     let payload;
     try { payload = JSON.parse(await readBody(req)); } catch (e) { return sendJson(res, 400, { error: 'Solicitud inválida.' }); }
 
-    const { task } = payload;
+    const task = typeof payload.task === 'string' ? payload.task.trim().slice(0, 500) : '';
     if (!task) return sendJson(res, 400, { error: 'Falta la tarea' });
 
     const prompt = `Actúa como Kaia, una asistente de bienestar estudiantil con el lema "como a pasos de tortuga". El usuario tiene esta tarea: "${task}". 
     Divídela en 3 a 5 micro-pasos realistas y sencillos.
     Devuelve la respuesta estrictamente como un arreglo JSON plano, sin markdown, donde cada objeto tenga: "title" y "time" (ej. "15 min").`;
 
-    try {
-        const upstream = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': API_KEY },
-            body: JSON.stringify({
-                contents: [{ role: 'user', parts: [{ text: prompt }] }],
-                generationConfig: { maxOutputTokens: 600, temperature: 0.6 }
-            })
-        });
-        const data = await upstream.json();
-        let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
-        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-        const steps = JSON.parse(text);
-        sendJson(res, 200, { steps });
-    } catch (error) {
-        sendJson(res, 500, { error: 'No se pudo generar el desglose' });
-    }
+    const result = await requestSteps(prompt);
+    if (result.steps) return sendJson(res, 200, { steps: result.steps });
+    sendJson(res, result.status, { error: result.error });
 }
 
 const server = http.createServer(async (req, res) => {
