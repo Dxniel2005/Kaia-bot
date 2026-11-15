@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bot-n/a - proyecto n/a</title>
+    <title>Kaia - proyecto n/a</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -166,15 +166,15 @@
                     <i class="fa-solid fa-brain"></i>
                 </div>
                 <div>
-                    <span class="text-xl font-bold tracking-tight text-forest dark:text-darktext">bot<span class="text-moss">-n/a</span></span>
-                    <span class="text-xs text-forest dark:text-darkmuted block -mt-1 font-medium">proyecto n/a</span>
+                    <span class="text-xl font-bold tracking-tight text-forest dark:text-darktext">Kaia</span>
+                    <span class="text-xs text-forest dark:text-darkmuted block -mt-1 font-medium">como a pasos de tortuga</span>
                 </div>
             </div>
 
             <!-- Navigation Tabs -->
             <nav class="hidden md:flex items-center gap-1 bg-cream/70 dark:bg-darkbg/70 p-1.5 rounded-xl border border-sage/40 dark:border-darkborder">
                 <button onclick="switchTab('assistant')" id="nav-assistant" class="px-4 py-2 rounded-lg text-sm font-medium transition-all bg-forest text-cream dark:bg-moss dark:text-darkbg font-semibold shadow">
-                    <i class="fa-solid fa-microphone-lines mr-2"></i>Asistente bot-n/a
+                    <i class="fa-solid fa-microphone-lines mr-2"></i>Asistente Kaia
                 </button>
                 <button onclick="switchTab('deconstruct')" id="nav-deconstruct" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext hover:bg-mist dark:hover:bg-darkborder transition-all">
                     <i class="fa-solid fa-list-check mr-2"></i>Desglose Anti-Caos
@@ -207,7 +207,7 @@
         <!-- Mobile Navigation Bar -->
         <div class="md:hidden flex justify-around bg-cream dark:bg-darkcard border-t border-sage/40 dark:border-darkborder py-2 px-1">
             <button onclick="switchTab('assistant')" class="flex flex-col items-center text-xs text-forest dark:text-darktext font-medium">
-                <i class="fa-solid fa-microphone-lines text-base mb-1"></i>bot-n/a
+                <i class="fa-solid fa-microphone-lines text-base mb-1"></i>Kaia
             </button>
             <button onclick="switchTab('deconstruct')" class="flex flex-col items-center text-xs text-forest-soft dark:text-darkmuted hover:text-forest">
                 <i class="fa-solid fa-list-check text-base mb-1"></i>Desglose
@@ -234,9 +234,10 @@
                 <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xl relative overflow-hidden">
                     <div class="absolute -top-10 -left-10 w-40 h-40 bg-moss/15 rounded-full blur-3xl pointer-events-none"></div>
                     
-                    <span class="text-xs uppercase tracking-widest text-forest dark:text-darktext font-semibold mb-4 bg-moss/15 px-3 py-1 rounded-full border border-moss/30">
-                        Copiloto Inteligente en Vivo
+                    <span class="text-xs uppercase tracking-widest text-forest dark:text-darktext font-semibold mb-1 bg-moss/15 px-3 py-1 rounded-full border border-moss/35">
+                        Kaia • Copiloto en Vivo
                     </span>
+                    <span class="text-[11px] text-forest-soft dark:text-darkmuted italic mb-4">"como a pasos de tortuga"</span>
 
                     <!-- Orb Interactive Avatar -->
                     <div class="my-6 relative flex items-center justify-center">
@@ -245,14 +246,14 @@
                         </div>
                     </div>
 
-                    <h2 id="sura-state-title" class="text-xl font-bold text-forest dark:text-darktext mb-1">bot-n/a está listo</h2>
-                    <p id="sura-state-desc" class="text-xs text-forest-soft dark:text-darkmuted max-w-xs mb-6">Presiona el micrófono o escribe para conversar y aliviar la carga universitaria.</p>
+                    <h2 id="sura-state-title" class="text-xl font-bold text-forest dark:text-darktext mb-1">Kaia está lista</h2>
+                    <p id="sura-state-desc" class="text-xs text-forest-soft dark:text-darkmuted max-w-xs mb-6">Presiona el micrófono o escribe para conversar y aliviar la carga universitaria paso a paso.</p>
 
                     <!-- Voice Interaction Controls -->
                     <div class="flex items-center gap-3 w-full justify-center">
                         <button id="mic-btn" onclick="toggleMic()" class="px-5 py-3 rounded-xl bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-semibold flex items-center gap-2 shadow-lg shadow-forest/20 transition-all active:scale-95">
                             <i class="fa-solid fa-microphone text-lg"></i>
-                            <span id="mic-btn-text">Hablar con bot-n/a</span>
+                            <span id="mic-btn-text">Hablar con Kaia</span>
                         </button>
                         <button onclick="stopVoice()" class="p-3 rounded-xl bg-sage/50 dark:bg-darkborder hover:bg-sage/70 dark:hover:bg-darkborder/80 text-forest dark:text-darktext transition-all" title="Silenciar Voz">
                             <i class="fa-solid fa-volume-xmark"></i>
@@ -277,7 +278,7 @@
 
                     <!-- MÓDULO 2: Panel de personalización -->
                     <div id="customize-panel" class="mt-6 pt-6 border-t border-sage/50 dark:border-darkborder w-full text-left">
-                        <span class="text-xs text-forest-soft dark:text-darkmuted block mb-3 font-medium"><i class="fa-solid fa-sliders text-moss mr-1"></i> Personaliza a bot-n/a</span>
+                        <span class="text-xs text-forest-soft dark:text-darkmuted block mb-3 font-medium"><i class="fa-solid fa-sliders text-moss mr-1"></i> Personaliza a Kaia</span>
 
                         <label for="voice-select" class="text-xs text-forest-soft dark:text-darkmuted block mb-1">Voz</label>
                         <select id="voice-select" class="w-full bg-cream dark:bg-darkbg border border-sage dark:border-darkborder focus:border-moss focus:ring-1 focus:ring-moss rounded-xl px-3 py-2 text-sm text-forest dark:text-darktext outline-none transition-all mb-4">
@@ -351,14 +352,14 @@
                                 <i class="fa-solid fa-brain"></i>
                             </div>
                             <div class="bg-cream dark:bg-darkbg border border-sage/60 dark:border-darkborder rounded-2xl rounded-tl-none p-3.5 max-w-[85%] text-sm text-forest dark:text-darktext">
-                                "¡Hola! Qué bueno que estás aquí. Sé que a veces la universidad se pone pesada y parece que todo se junta. Respira, que no estás solo en esto. Podemos ordenar tus tareas, hacer una pausa para calmar la mente, o simplemente desahogarnos un rato. ¿Cómo va tu día hoy?"
+                                "¡Hola! Soy Kaia. Sé que a veces la universidad se pone pesada y parece que todo se junta. Vamos a llevárnosla a pasos de tortuga, sin prisa. Respira, que no estás solo en esto. ¿Cómo va tu día hoy?"
                             </div>
                         </div>
                     </div>
 
                     <!-- Input Box -->
                     <form onsubmit="handleChatSubmit(event)" class="mt-3 flex items-center gap-2 pt-3 border-t border-sage/50 dark:border-darkborder">
-                        <input type="text" id="chat-input" autocomplete="off" name="chat_input_sura" placeholder="Escribe lo que sientes o lo que tienes pendiente..." class="flex-1 bg-cream dark:bg-darkbg border border-sage dark:border-darkborder focus:border-moss focus:ring-1 focus:ring-moss rounded-xl px-4 py-3 text-sm text-forest dark:text-darktext placeholder-forest-soft/70 dark:placeholder-darkmuted/70 outline-none transition-all">
+                        <input type="text" id="chat-input" autocomplete="off" name="chat_input_kaia" placeholder="Escribe lo que sientes o lo que tienes pendiente..." class="flex-1 bg-cream dark:bg-darkbg border border-sage dark:border-darkborder focus:border-moss focus:ring-1 focus:ring-moss rounded-xl px-4 py-3 text-sm text-forest dark:text-darktext placeholder-forest-soft/70 dark:placeholder-darkmuted/70 outline-none transition-all">
                         <button type="submit" class="bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg p-3 rounded-xl font-semibold shadow-md transition-all">
                             <i class="fa-solid fa-paper-plane text-base"></i>
                         </button>
@@ -376,7 +377,7 @@
                         Desglose Inteligente de Tareas
                     </span>
                     <h2 class="text-2xl font-bold text-forest dark:text-darktext mt-2">Transforma el caos en pasos ejecutables</h2>
-                    <p class="text-forest-soft dark:text-darkmuted text-sm mt-1">Escribe la entrega pesada o proyecto que te genera estrés y bot-n/a lo dividirá en micro-metas lógicas con tiempo estimado.</p>
+                    <p class="text-forest-soft dark:text-darkmuted text-sm mt-1">Escribe la entrega pesada o proyecto que te genera estrés y Kaia lo dividirá en micro-metas lógicas a pasos de tortuga.</p>
                 </div>
 
                 <!-- Form to input giant task -->
@@ -510,9 +511,18 @@
 
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-cream dark:bg-darkbg border-t border-sage/40 dark:border-darkborder py-4 text-center text-xs text-forest-soft dark:text-darkmuted">
-        <p>Prototipo Funcional "bot-n/a" - Taller Práctico de Tecnologías Emergentes © 2026</p>
+    <!-- Footer con Derechos y Créditos -->
+    <footer class="bg-mist/60 dark:bg-darkcard/60 border-t border-sage/40 dark:border-darkborder py-5 px-4 text-xs text-forest-soft dark:text-darkmuted">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+            <div>
+                <p class="font-semibold text-forest dark:text-darktext">Kaia ("como a pasos de tortuga") &bull; Asistente de Bienestar Estudiantil</p>
+                <p class="mt-0.5">Todos los derechos reservados &copy; 2026 &mdash; Prototipo Funcional</p>
+            </div>
+            <div class="flex flex-col sm:items-end">
+                <p>Desarrollado por <span class="font-semibold text-forest dark:text-moss">[Tu Nombre / Equipo]</span></p>
+                <p class="mt-0.5 text-[11px] opacity-80">Taller Práctico de Tecnologías Emergentes</p>
+            </div>
+        </div>
     </footer>
 
     <!-- MÓDULO 3: Modal de líneas de apoyo -->
@@ -570,15 +580,15 @@
             recognition.onstart = () => {
                 isListening = true;
                 voiceHandled = false;
-                updateOrbState('listening', 'bot-n/a está escuchando...', 'Habla con naturalidad...');
+                updateOrbState('listening', 'Kaia está escuchando...', 'Habla con naturalidad...');
                 document.getElementById('mic-btn-text').innerText = 'Escuchando...';
             };
 
             recognition.onend = () => {
                 isListening = false;
-                document.getElementById('mic-btn-text').innerText = 'Hablar con bot-n/a';
+                document.getElementById('mic-btn-text').innerText = 'Hablar con Kaia';
                 if (!voiceHandled && !isSpeaking) {
-                    updateOrbState('calm', 'bot-n/a está listo', 'No escuché nada. Presiona el micrófono e inténtalo de nuevo.');
+                    updateOrbState('calm', 'Kaia está lista', 'No escuché nada. Presiona el micrófono e inténtalo de nuevo.');
                 }
             };
 
@@ -592,15 +602,17 @@
             recognition.onerror = (event) => {
                 voiceHandled = true;
                 const messages = {
-                    'not-allowed': 'El navegador bloqueó el micrófono. Permítelo en el candado 🔒.',
+                    'not-allowed': 'El navegador bloqueó el micrófono. Permítelo en el candado 🔒 o usa HTTPS/localhost.',
                     'no-speech': 'No te escuché. Habla más cerca del micrófono.',
-                    'audio-capture': 'No encuentro ningún micrófono.',
-                    'network': 'El reconocimiento de voz necesita internet.'
+                    'audio-capture': 'No encuentro ningún micrófono conectado.',
+                    'network': 'El reconocimiento de voz requiere conexión a internet.'
                 };
                 const msg = messages[event.error];
                 if (msg === '') return;
                 updateOrbState('calm', 'No pude escucharte', msg || ('Error de voz: ' + event.error));
             };
+        } else {
+            document.getElementById('voice-status-badge').innerHTML = '<i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Voz no soportada';
         }
 
         // ---- Control de Modo Oscuro ----
@@ -609,18 +621,17 @@
             const iconEl = document.getElementById('dark-mode-icon');
             if (htmlEl.classList.contains('dark')) {
                 htmlEl.classList.remove('dark');
-                localStorage.setItem('bot_na_theme', 'light');
+                localStorage.setItem('kaia_theme', 'light');
                 iconEl.className = 'fa-solid fa-moon text-xs';
             } else {
                 htmlEl.classList.add('dark');
-                localStorage.setItem('bot_na_theme', 'dark');
+                localStorage.setItem('kaia_theme', 'dark');
                 iconEl.className = 'fa-solid fa-sun text-xs text-amber-400';
             }
         }
 
-        // Cargar preferencia guardada de modo oscuro
         (function() {
-            const savedTheme = localStorage.getItem('bot_na_theme');
+            const savedTheme = localStorage.getItem('kaia_theme');
             const iconEl = document.getElementById('dark-mode-icon');
             if (savedTheme === 'light') {
                 document.documentElement.classList.remove('dark');
@@ -631,7 +642,7 @@
             }
         })();
 
-        // ---- Selección de voz ----
+        // ---- Selección y Síntesis de Voz ----
         const normVoiceName = (str) => (str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         const VOICE_HINTS = {
             female: ['Mónica', 'Sabina', 'Helena', 'Google español', 'Laura', 'Elvira', 'Dalia', 'Paulina', 'Lucía', 'Elena'].map(normVoiceName),
@@ -640,8 +651,12 @@
 
         function pickSpanishVoice(gender) {
             if (!synth) return null;
-            const spanish = synth.getVoices().filter(v => (v.lang || '').toLowerCase().replace('_', '-').startsWith('es'));
-            if (!spanish.length) return null;
+            const allVoices = synth.getVoices();
+            if (!allVoices.length) return null;
+            
+            const spanish = allVoices.filter(v => (v.lang || '').toLowerCase().replace('_', '-').startsWith('es'));
+            if (!spanish.length) return allVoices[0];
+            
             const matches = (voice, names) => names.some(n => normVoiceName(voice.name).includes(n));
             const other = gender === 'female' ? 'male' : 'female';
             return spanish.find(v => matches(v, VOICE_HINTS[gender])) || spanish.find(v => !matches(v, VOICE_HINTS[other])) || spanish[0];
@@ -655,7 +670,10 @@
         function speakText(text) {
             if (!synth) return;
             synth.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
+            
+            const cleanText = text.replace(/[\u{1F600}-\u{1F6FF}]/gu, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            
             const voice = pickSpanishVoice(selectedVoiceGender);
             if (voice) {
                 utterance.voice = voice;
@@ -663,17 +681,23 @@
             } else {
                 utterance.lang = 'es-ES';
             }
-            utterance.rate = 0.95;
-            utterance.pitch = selectedVoiceGender === 'male' ? 0.85 : 1.2;
+            
+            utterance.rate = 0.98;
+            utterance.pitch = selectedVoiceGender === 'male' ? 0.88 : 1.12;
 
             utterance.onstart = () => {
                 isSpeaking = true;
-                updateOrbState('speaking', 'bot-n/a está hablando...', 'Escucha la orientación empática.');
+                updateOrbState('speaking', 'Kaia está hablando...', 'Escucha la respuesta.');
             };
 
             utterance.onend = () => {
                 isSpeaking = false;
-                updateOrbState('calm', 'bot-n/a está listo', 'Presiona el micrófono o escribe para conversar.');
+                updateOrbState('calm', 'Kaia está lista', 'Presiona el micrófono o escribe para conversar.');
+            };
+
+            utterance.onerror = () => {
+                isSpeaking = false;
+                updateOrbState('calm', 'Kaia está lista', 'Presiona el micrófono o escribe para conversar.');
             };
 
             synth.speak(utterance);
@@ -708,7 +732,7 @@
             if (recognition && isListening) recognition.stop();
             isSpeaking = false;
             isListening = false;
-            updateOrbState('calm', 'bot-n/a está listo', 'Voz detenida.');
+            updateOrbState('calm', 'Kaia está lista', 'Voz detenida.');
         }
 
         function updateOrbState(state, title, desc) {
@@ -746,6 +770,10 @@
                 recognition.stop();
                 return;
             }
+            if (!window.isSecureContext) {
+                updateOrbState('calm', 'Requiere conexión segura', 'Abre la página desde Render (https) o localhost.');
+                return;
+            }
             if (synth) synth.cancel();
             isSpeaking = false;
 
@@ -754,11 +782,16 @@
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     stream.getTracks().forEach(t => t.stop());
                 } catch (err) {
-                    updateOrbState('calm', 'Micrófono denegado', 'Permite el micrófono en el navegador.');
+                    updateOrbState('calm', 'Micrófono bloqueado', 'Permite el acceso al micrófono en el navegador.');
                     return;
                 }
             }
-            try { recognition.start(); } catch (e) { recognition.abort(); }
+            try { 
+                recognition.start(); 
+            } catch (e) { 
+                try { recognition.abort(); } catch(_) {}
+                setTimeout(() => { try { recognition.start(); } catch(_) {} }, 250);
+            }
         }
 
         function switchTab(tabId) {
@@ -826,7 +859,7 @@
         function saveChat() {
             let localOk = true;
             try {
-                localStorage.setItem('bot_na_chat_history', JSON.stringify(chatHistory));
+                localStorage.setItem('kaia_chat_history', JSON.stringify(chatHistory));
             } catch (err) { localOk = false; }
             syncToServer();
             setAutosaveStatus(localOk || serverAvailable);
@@ -834,7 +867,7 @@
 
         function loadSavedChat() {
             try {
-                const raw = localStorage.getItem('bot_na_chat_history');
+                const raw = localStorage.getItem('kaia_chat_history');
                 return raw ? cleanMessages(JSON.parse(raw)) : [];
             } catch (err) { return []; }
         }
@@ -848,14 +881,14 @@
             const saved = pendingResumeHistory;
             pendingResumeHistory = null;
             removeResumeOptions();
-            saved.forEach(m => appendChatMessage(m.role === 'user' ? 'user' : 'sura', m.content));
+            saved.forEach(m => appendChatMessage(m.role === 'user' ? 'user' : 'kaia', m.content));
             chatHistory = saved.map(m => ({ role: m.role, content: m.content }));
         }
 
         function startNewChat() {
             pendingResumeHistory = null;
             removeResumeOptions();
-            try { localStorage.removeItem('bot_na_chat_history'); } catch (err) {}
+            try { localStorage.removeItem('kaia_chat_history'); } catch (err) {}
             if (serverAvailable) { syncQueue = syncQueue.then(() => postJSON('/api/history/clear')).catch(() => {}); }
             chatHistory = [];
             document.getElementById('chat-messages').innerHTML = initialGreetingHTML;
@@ -891,7 +924,7 @@
 
             pendingResumeHistory = saved;
             container.innerHTML = '';
-            appendChatMessage('sura', '¡Hola de nuevo! Veo que tenemos una conversación pendiente. ¿Quieres reanudarla o empezar de cero?');
+            appendChatMessage('kaia', '¡Hola de nuevo! Veo que tenemos una conversación pendiente. ¿Quieres reanudarla o empezar de cero?');
 
             const btnClass = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-forest hover:bg-forest-soft dark:bg-moss dark:text-darkbg text-cream transition-all';
             resumeOptionsEl = document.createElement('div');
@@ -916,7 +949,7 @@
             appendChatMessage('user', userMsg);
             chatHistory.push({ role: 'user', content: userMsg });
             saveChat();
-            updateOrbState('thinking', 'bot-n/a está procesando...', 'Pensando...');
+            updateOrbState('thinking', 'Kaia está procesando...', 'Pensando...');
 
             let reply;
             try {
@@ -941,11 +974,11 @@
 
             chatHistory.push({ role: 'assistant', content: reply });
             saveChat();
-            appendChatMessage('sura', reply);
+            appendChatMessage('kaia', reply);
             isWaitingReply = false;
 
             if (synth) speakText(reply);
-            else updateOrbState('calm', 'bot-n/a está listo', 'Listo.');
+            else updateOrbState('calm', 'Kaia está lista', 'Lista.');
         }
 
         function escapeHtml(str) {
@@ -999,8 +1032,8 @@
                 return "Lo que me cuentas es muy importante y me preocupa cómo te sientes. Por favor, habla con alguien de confianza o comunícate con emergencias. [ALERTA_AYUDA]";
             }
             return pick([
-                "Te escucho perfectamente. ¿Cómo te sientes con tus entregas hoy?",
-                "Entiendo lo pesado que puede ser la universidad. ¿Quieres que organicemos tus tareas?",
+                "Te escucho perfectamente. Vamos a llevárnosla a pasos de tortuga, ¿cómo te sientes con tus entregas hoy?",
+                "Entiendo lo pesado que puede ser la universidad. Tranquilo, avancemos paso a paso.",
                 "Aquí estoy para apoyarte. Cuéntame qué te pasa por la cabeza."
             ]);
         }
@@ -1035,7 +1068,7 @@
             });
 
             document.getElementById('task-count-badge').innerText = subtasks.length + ' Pasos Sugeridos';
-            speakText(`He dividido tu tarea en 4 micro-pasos ejecutables.`);
+            speakText(`He dividido tu tarea en 4 micro-pasos ejecutables, a pasos de tortuga.`);
         }
 
         function togglePomodoro() {
