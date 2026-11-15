@@ -393,3 +393,31 @@ server.listen(PORT, '0.0.0.0', () => {
     console.log('Página:', path.basename(HTML_FILE), fs.existsSync(HTML_FILE) ? '(encontrada)' : '(NO ENCONTRADA: ponla junto a server.js)');
     if (!API_KEY) console.warn('AVISO: no hay GEMINI_API_KEY. Revisa que tu archivo se llame .env (con punto) y esté junto a server.js.');
 });
+
+// Ruta para el Desglose Anti-Caos con IA
+app.post('/api/deconstruct', async (req, res) => {
+    try {
+        const { task } = req.body;
+        if (!task) return res.status(400).json({ error: 'Falta la tarea' });
+
+        const prompt = `Actúa como Kaia, una asistente de bienestar estudiantil con el lema "como a pasos de tortuga". El usuario tiene la siguiente situación o tarea en mente: "${task}". 
+        Divídela en 3 a 5 micro-pasos realistas y sencillos.( Obviamente variara dependiendo de la tarea/situacion)
+        Devuelve la respuesta estrictamente como un arreglo JSON plano, sin texto adicional ni bloques de markdown complejos, donde cada objeto tenga exactamente estas dos propiedades: 
+        "title" (el texto del micro-paso de forma amigable) y "time" (un tiempo estimado corto, ej. "15 min", "20 min").`;
+
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: [{ role: 'user', parts: [{ text: prompt }] }]
+        });
+
+        let text = response.text.trim();
+        // Limpiar marcas de código markdown si las trae la respuesta
+        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+        
+        const steps = JSON.parse(text);
+        res.json({ steps });
+    } catch (error) {
+        console.error('Error en desglose con IA:', error);
+        res.status(500).json({ error: 'No se pudo generar el desglose' });
+    }
+});
