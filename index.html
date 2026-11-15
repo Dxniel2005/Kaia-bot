@@ -1,32 +1,31 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bot-n/a - proyecto n/a</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome CDN for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js for Metrics -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        // Paleta: beige y verdes
-                        cream: '#F6F0E6',   // fondo
-                        mist:  '#D7E1C8',   // tarjetas
-                        sage:  '#A9C08A',   // bordes y detalles
-                        moss:  '#6F8E5A',   // acentos e íconos
+                        cream: '#F6F0E6',   // fondo claro
+                        mist:  '#D7E1C8',   // tarjetas claras
+                        sage:  '#A9C08A',   // bordes claros
+                        moss:  '#6F8E5A',   // acentos claros
                         forest: {
-                            DEFAULT: '#34402E', // texto principal y botones
-                            soft: '#4B5A43'     // texto secundario (mezcla de forest con moss, para legibilidad)
-                        }
+                            DEFAULT: '#34402E', 
+                            soft: '#4B5A43'     
+                        },
+                        // Paleta modo oscuro
+                        darkbg: '#121810',
+                        darkcard: '#1B2418',
+                        darkborder: '#2C3A27',
+                        darktext: '#E2EBD8',
+                        darkmuted: '#A4B598'
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -45,11 +44,22 @@
             }
         }
     </script>
+    <!-- FontAwesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Metrics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #F6F0E6;
             color: #34402E;
+        }
+        .dark body, html.dark {
+            background-color: #121810;
+            color: #E2EBD8;
         }
 
         /* Custom Scrollbar */
@@ -58,6 +68,9 @@
         }
         ::-webkit-scrollbar-track {
             background: #D7E1C8;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #1B2418;
         }
         ::-webkit-scrollbar-thumb {
             background: #6F8E5A;
@@ -73,6 +86,9 @@
             position: relative;
             box-shadow: 0 0 30px rgba(111, 142, 90, 0.45);
             transition: all 0.5s ease;
+        }
+        .dark .orb-avatar {
+            background: radial-gradient(circle at 30% 30%, #2C3A27, #6F8E5A, #A9C08A);
         }
 
         .orb-avatar.speaking {
@@ -130,6 +146,9 @@
             border-color: #34402E;
             box-shadow: 0 0 50px rgba(52, 64, 46, 0.35);
         }
+        .dark .breath-hold {
+            border-color: #E2EBD8;
+        }
 
         .breath-shrink {
             transform: scale(1);
@@ -137,60 +156,66 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between bg-cream text-forest">
+<body class="min-h-screen flex flex-col justify-between bg-cream text-forest dark:bg-darkbg dark:text-darktext transition-colors duration-300">
 
     <!-- Navbar -->
-    <header class="bg-mist/80 backdrop-blur border-b border-sage/50 sticky top-0 z-50">
+    <header class="bg-mist/80 dark:bg-darkcard/80 backdrop-blur border-b border-sage/50 dark:border-darkborder sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-forest to-moss flex items-center justify-center text-cream font-bold text-xl shadow-lg shadow-forest/15">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-forest to-moss dark:from-moss dark:to-darkborder flex items-center justify-center text-cream font-bold text-xl shadow-lg shadow-forest/15">
                     <i class="fa-solid fa-brain"></i>
                 </div>
                 <div>
-                    <span class="text-xl font-bold tracking-tight text-forest">bot<span class="text-moss">-n/a</span></span>
-                    <span class="text-xs text-forest block -mt-1 font-medium">proyecto n/a</span>
+                    <span class="text-xl font-bold tracking-tight text-forest dark:text-darktext">bot<span class="text-moss">-n/a</span></span>
+                    <span class="text-xs text-forest dark:text-darkmuted block -mt-1 font-medium">proyecto n/a</span>
                 </div>
             </div>
 
             <!-- Navigation Tabs -->
-            <nav class="hidden md:flex items-center gap-1 bg-cream/70 p-1.5 rounded-xl border border-sage/40">
-                <button onclick="switchTab('assistant')" id="nav-assistant" class="px-4 py-2 rounded-lg text-sm font-medium transition-all bg-forest text-cream font-semibold shadow">
+            <nav class="hidden md:flex items-center gap-1 bg-cream/70 dark:bg-darkbg/70 p-1.5 rounded-xl border border-sage/40 dark:border-darkborder">
+                <button onclick="switchTab('assistant')" id="nav-assistant" class="px-4 py-2 rounded-lg text-sm font-medium transition-all bg-forest text-cream dark:bg-moss dark:text-darkbg font-semibold shadow">
                     <i class="fa-solid fa-microphone-lines mr-2"></i>Asistente bot-n/a
                 </button>
-                <button onclick="switchTab('deconstruct')" id="nav-deconstruct" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft hover:text-forest hover:bg-mist transition-all">
+                <button onclick="switchTab('deconstruct')" id="nav-deconstruct" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext hover:bg-mist dark:hover:bg-darkborder transition-all">
                     <i class="fa-solid fa-list-check mr-2"></i>Desglose Anti-Caos
                 </button>
-                <button onclick="switchTab('breathing')" id="nav-breathing" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft hover:text-forest hover:bg-mist transition-all">
+                <button onclick="switchTab('breathing')" id="nav-breathing" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext hover:bg-mist dark:hover:bg-darkborder transition-all">
                     <i class="fa-solid fa-wind mr-2"></i>Escudo Anti-Burnout
                 </button>
-                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft hover:text-forest hover:bg-mist transition-all">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext hover:bg-mist dark:hover:bg-darkborder transition-all">
                     <i class="fa-solid fa-chart-line mr-2"></i>Métricas de Estrés
                 </button>
             </nav>
 
             <div class="flex items-center gap-2">
                 <!-- Acceso permanente a las líneas de apoyo -->
-                <button id="header-help-btn" type="button" onclick="showHelpModal()" title="Líneas de apoyo y emergencia" class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-300 hover:bg-rose-200 transition-all flex items-center gap-2">
+                <button id="header-help-btn" type="button" onclick="showHelpModal()" title="Líneas de apoyo y emergencia" class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-900 hover:bg-rose-200 transition-all flex items-center gap-2">
                     <i class="fa-solid fa-life-ring"></i> Ayuda
                 </button>
-                <span id="voice-status-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-moss/15 text-forest border border-moss/40 flex items-center gap-2">
+                
+                <!-- Botón de Modo Oscuro al lado de Voz Activa -->
+                <button id="dark-mode-toggle" type="button" onclick="toggleDarkMode()" title="Cambiar modo oscuro/claro" class="w-9 h-9 rounded-full bg-cream dark:bg-darkcard border border-sage/60 dark:border-darkborder text-forest dark:text-darktext flex items-center justify-center hover:bg-sage/30 transition-all">
+                    <i id="dark-mode-icon" class="fa-solid fa-moon text-xs"></i>
+                </button>
+
+                <span id="voice-status-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-moss/15 dark:bg-moss/20 text-forest dark:text-darktext border border-moss/40 flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-moss animate-ping"></span> Voz Activa
                 </span>
             </div>
         </div>
         
         <!-- Mobile Navigation Bar -->
-        <div class="md:hidden flex justify-around bg-cream border-t border-sage/40 py-2 px-1">
-            <button onclick="switchTab('assistant')" class="flex flex-col items-center text-xs text-forest font-medium">
+        <div class="md:hidden flex justify-around bg-cream dark:bg-darkcard border-t border-sage/40 dark:border-darkborder py-2 px-1">
+            <button onclick="switchTab('assistant')" class="flex flex-col items-center text-xs text-forest dark:text-darktext font-medium">
                 <i class="fa-solid fa-microphone-lines text-base mb-1"></i>bot-n/a
             </button>
-            <button onclick="switchTab('deconstruct')" class="flex flex-col items-center text-xs text-forest-soft hover:text-forest">
+            <button onclick="switchTab('deconstruct')" class="flex flex-col items-center text-xs text-forest-soft dark:text-darkmuted hover:text-forest">
                 <i class="fa-solid fa-list-check text-base mb-1"></i>Desglose
             </button>
-            <button onclick="switchTab('breathing')" class="flex flex-col items-center text-xs text-forest-soft hover:text-forest">
+            <button onclick="switchTab('breathing')" class="flex flex-col items-center text-xs text-forest-soft dark:text-darkmuted hover:text-forest">
                 <i class="fa-solid fa-wind text-base mb-1"></i>Respirar
             </button>
-            <button onclick="switchTab('dashboard')" class="flex flex-col items-center text-xs text-forest-soft hover:text-forest">
+            <button onclick="switchTab('dashboard')" class="flex flex-col items-center text-xs text-forest-soft dark:text-darkmuted hover:text-forest">
                 <i class="fa-solid fa-chart-line text-base mb-1"></i>Métricas
             </button>
         </div>
@@ -206,91 +231,91 @@
                 <!-- Columna del avatar: tarjeta + panel de ayuda -->
                 <div class="lg:col-span-5 space-y-4">
                 <!-- Avatar Card -->
-                <div class="bg-mist/70 border border-sage/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xl relative overflow-hidden">
+                <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xl relative overflow-hidden">
                     <div class="absolute -top-10 -left-10 w-40 h-40 bg-moss/15 rounded-full blur-3xl pointer-events-none"></div>
                     
-                    <span class="text-xs uppercase tracking-widest text-forest font-semibold mb-4 bg-moss/15 px-3 py-1 rounded-full border border-moss/30">
+                    <span class="text-xs uppercase tracking-widest text-forest dark:text-darktext font-semibold mb-4 bg-moss/15 px-3 py-1 rounded-full border border-moss/30">
                         Copiloto Inteligente en Vivo
                     </span>
 
                     <!-- Orb Interactive Avatar -->
                     <div class="my-6 relative flex items-center justify-center">
                         <div id="sura-orb" class="orb-avatar flex items-center justify-center">
-                            <i id="orb-icon" class="fa-solid fa-sparkles text-3xl text-forest/80"></i>
+                            <i id="orb-icon" class="fa-solid fa-sparkles text-3xl text-forest/80 dark:text-darktext"></i>
                         </div>
                     </div>
 
-                    <h2 id="sura-state-title" class="text-xl font-bold text-forest mb-1">bot-n/a está listo</h2>
-                    <p id="sura-state-desc" class="text-xs text-forest-soft max-w-xs mb-6">Presiona el micrófono o escribe para conversar y aliviar la carga universitaria.</p>
+                    <h2 id="sura-state-title" class="text-xl font-bold text-forest dark:text-darktext mb-1">bot-n/a está listo</h2>
+                    <p id="sura-state-desc" class="text-xs text-forest-soft dark:text-darkmuted max-w-xs mb-6">Presiona el micrófono o escribe para conversar y aliviar la carga universitaria.</p>
 
                     <!-- Voice Interaction Controls -->
                     <div class="flex items-center gap-3 w-full justify-center">
-                        <button id="mic-btn" onclick="toggleMic()" class="px-5 py-3 rounded-xl bg-forest hover:bg-forest-soft text-cream font-semibold flex items-center gap-2 shadow-lg shadow-forest/20 transition-all active:scale-95">
+                        <button id="mic-btn" onclick="toggleMic()" class="px-5 py-3 rounded-xl bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-semibold flex items-center gap-2 shadow-lg shadow-forest/20 transition-all active:scale-95">
                             <i class="fa-solid fa-microphone text-lg"></i>
                             <span id="mic-btn-text">Hablar con bot-n/a</span>
                         </button>
-                        <button onclick="stopVoice()" class="p-3 rounded-xl bg-sage/50 hover:bg-sage/70 text-forest transition-all" title="Silenciar Voz">
+                        <button onclick="stopVoice()" class="p-3 rounded-xl bg-sage/50 dark:bg-darkborder hover:bg-sage/70 dark:hover:bg-darkborder/80 text-forest dark:text-darktext transition-all" title="Silenciar Voz">
                             <i class="fa-solid fa-volume-xmark"></i>
                         </button>
                     </div>
 
                     <!-- Quick Emotional Prompts -->
-                    <div class="mt-6 pt-6 border-t border-sage/50 w-full text-left">
-                        <span class="text-xs text-forest-soft block mb-2 font-medium"><i class="fa-regular fa-lightbulb text-moss mr-1"></i> Desahógate en un clic:</span>
+                    <div class="mt-6 pt-6 border-t border-sage/50 dark:border-darkborder w-full text-left">
+                        <span class="text-xs text-forest-soft dark:text-darkmuted block mb-2 font-medium"><i class="fa-regular fa-lightbulb text-moss mr-1"></i> Desahógate en un clic:</span>
                         <div class="flex flex-wrap gap-2">
-                            <button onclick="sendQuickPrompt('Estoy colapsado con 3 entregas pesadas para mañana')" class="text-xs bg-cream hover:bg-sage/40 border border-sage text-forest-soft px-3 py-1.5 rounded-lg transition-all text-left">
+                            <button onclick="sendQuickPrompt('Estoy colapsado con 3 entregas pesadas para mañana')" class="text-xs bg-cream dark:bg-darkbg hover:bg-sage/40 dark:hover:bg-darkborder border border-sage dark:border-darkborder text-forest-soft dark:text-darkmuted px-3 py-1.5 rounded-lg transition-all text-left">
                                 😫 "Estoy colapsado con 3 entregas"
                             </button>
-                            <button onclick="sendQuickPrompt('Siento mucha ansiedad y no puedo concentrarme')" class="text-xs bg-cream hover:bg-sage/40 border border-sage text-forest-soft px-3 py-1.5 rounded-lg transition-all text-left">
+                            <button onclick="sendQuickPrompt('Siento mucha ansiedad y no puedo concentrarme')" class="text-xs bg-cream dark:bg-darkbg hover:bg-sage/40 dark:hover:bg-darkborder border border-sage dark:border-darkborder text-forest-soft dark:text-darkmuted px-3 py-1.5 rounded-lg transition-all text-left">
                                 🧠 "Mucha ansiedad y no me concentro"
                             </button>
-                            <button onclick="sendQuickPrompt('¿Cómo organizo un proyecto largo en pasos simples?')" class="text-xs bg-cream hover:bg-sage/40 border border-sage text-forest-soft px-3 py-1.5 rounded-lg transition-all text-left">
+                            <button onclick="sendQuickPrompt('¿Cómo organizo un proyecto largo en pasos simples?')" class="text-xs bg-cream dark:bg-darkbg hover:bg-sage/40 dark:hover:bg-darkborder border border-sage dark:border-darkborder text-forest-soft dark:text-darkmuted px-3 py-1.5 rounded-lg transition-all text-left">
                                 📅 "¿Cómo divido un proyecto largo?"
                             </button>
                         </div>
                     </div>
 
                     <!-- MÓDULO 2: Panel de personalización -->
-                    <div id="customize-panel" class="mt-6 pt-6 border-t border-sage/50 w-full text-left">
-                        <span class="text-xs text-forest-soft block mb-3 font-medium"><i class="fa-solid fa-sliders text-moss mr-1"></i> Personaliza a bot-n/a</span>
+                    <div id="customize-panel" class="mt-6 pt-6 border-t border-sage/50 dark:border-darkborder w-full text-left">
+                        <span class="text-xs text-forest-soft dark:text-darkmuted block mb-3 font-medium"><i class="fa-solid fa-sliders text-moss mr-1"></i> Personaliza a bot-n/a</span>
 
-                        <label for="voice-select" class="text-xs text-forest-soft block mb-1">Voz</label>
-                        <select id="voice-select" class="w-full bg-cream border border-sage focus:border-moss focus:ring-1 focus:ring-moss rounded-xl px-3 py-2 text-sm text-forest outline-none transition-all mb-4">
+                        <label for="voice-select" class="text-xs text-forest-soft dark:text-darkmuted block mb-1">Voz</label>
+                        <select id="voice-select" class="w-full bg-cream dark:bg-darkbg border border-sage dark:border-darkborder focus:border-moss focus:ring-1 focus:ring-moss rounded-xl px-3 py-2 text-sm text-forest dark:text-darktext outline-none transition-all mb-4">
                             <option value="female">Femenina (Gentil)</option>
                             <option value="male">Masculina (Cálida)</option>
                         </select>
 
-                        <span class="text-xs text-forest-soft block mb-2">Avatar</span>
+                        <span class="text-xs text-forest-soft dark:text-darkmuted block mb-2">Avatar</span>
                         <div id="avatar-options" class="flex flex-wrap gap-2">
-                            <button type="button" data-avatar="fa-sparkles" onclick="changeAvatar('fa-sparkles')" title="Destellos" aria-label="Avatar destellos" class="w-10 h-10 rounded-xl border border-moss bg-moss/15 text-forest hover:border-moss hover:text-forest transition-all">
+                            <button type="button" data-avatar="fa-sparkles" onclick="changeAvatar('fa-sparkles')" title="Destellos" aria-label="Avatar destellos" class="w-10 h-10 rounded-xl border border-moss bg-moss/15 text-forest dark:text-darktext hover:border-moss transition-all">
                                 <i class="fa-solid fa-sparkles"></i>
                             </button>
-                            <button type="button" data-avatar="fa-robot" onclick="changeAvatar('fa-robot')" title="Robot" aria-label="Avatar robot" class="w-10 h-10 rounded-xl border border-sage bg-cream text-forest-soft hover:border-moss hover:text-forest transition-all">
+                            <button type="button" data-avatar="fa-robot" onclick="changeAvatar('fa-robot')" title="Robot" aria-label="Avatar robot" class="w-10 h-10 rounded-xl border border-sage dark:border-darkborder bg-cream dark:bg-darkbg text-forest-soft dark:text-darkmuted hover:border-moss hover:text-forest dark:hover:text-darktext transition-all">
                                 <i class="fa-solid fa-robot"></i>
                             </button>
-                            <button type="button" data-avatar="fa-brain" onclick="changeAvatar('fa-brain')" title="Cerebro" aria-label="Avatar cerebro" class="w-10 h-10 rounded-xl border border-sage bg-cream text-forest-soft hover:border-moss hover:text-forest transition-all">
+                            <button type="button" data-avatar="fa-brain" onclick="changeAvatar('fa-brain')" title="Cerebro" aria-label="Avatar cerebro" class="w-10 h-10 rounded-xl border border-sage dark:border-darkborder bg-cream dark:bg-darkbg text-forest-soft dark:text-darkmuted hover:border-moss hover:text-forest dark:hover:text-darktext transition-all">
                                 <i class="fa-solid fa-brain"></i>
                             </button>
-                            <button type="button" data-avatar="fa-ghost" onclick="changeAvatar('fa-ghost')" title="Fantasma" aria-label="Avatar fantasma" class="w-10 h-10 rounded-xl border border-sage bg-cream text-forest-soft hover:border-moss hover:text-forest transition-all">
+                            <button type="button" data-avatar="fa-ghost" onclick="changeAvatar('fa-ghost')" title="Fantasma" aria-label="Avatar fantasma" class="w-10 h-10 rounded-xl border border-sage dark:border-darkborder bg-cream dark:bg-darkbg text-forest-soft dark:text-darkmuted hover:border-moss hover:text-forest dark:hover:text-darktext transition-all">
                                 <i class="fa-solid fa-ghost"></i>
                             </button>
-                            <button type="button" data-avatar="fa-heart" onclick="changeAvatar('fa-heart')" title="Corazón" aria-label="Avatar corazón" class="w-10 h-10 rounded-xl border border-sage bg-cream text-forest-soft hover:border-moss hover:text-forest transition-all">
+                            <button type="button" data-avatar="fa-heart" onclick="changeAvatar('fa-heart')" title="Corazón" aria-label="Avatar corazón" class="w-10 h-10 rounded-xl border border-sage dark:border-darkborder bg-cream dark:bg-darkbg text-forest-soft dark:text-darkmuted hover:border-moss hover:text-forest dark:hover:text-darktext transition-all">
                                 <i class="fa-solid fa-heart"></i>
                             </button>
                         </div>
                     </div>
 </div>
 
-                <!-- MÓDULO 3: Panel de ayuda (se muestra solo si el modelo detecta una crisis) -->
+                <!-- MÓDULO 3: Panel de ayuda -->
                 <div id="emergency-help-panel" class="hidden">
-                    <div role="alert" class="bg-rose-50 border border-rose-300 rounded-2xl p-5 shadow-xl shadow-rose-900/20 text-left">
+                    <div role="alert" class="bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-900 rounded-2xl p-5 shadow-xl shadow-rose-900/20 text-left">
                         <div class="flex items-start gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-rose-200/70 text-rose-600 flex items-center justify-center shrink-0">
+                            <div class="w-9 h-9 rounded-xl bg-rose-200/70 dark:bg-rose-900/50 text-rose-600 dark:text-rose-300 flex items-center justify-center shrink-0">
                                 <i class="fa-solid fa-heart-pulse"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-rose-900 text-sm">No estás solo</h3>
-                                <p class="text-xs text-rose-800 mt-1">No estás solo ni sola en esto. Hay personas que quieren escucharte y acompañarte ahora mismo, y pedir ayuda es un acto de valentía.</p>
+                                <h3 class="font-semibold text-rose-900 dark:text-rose-200 text-sm">No estás solo</h3>
+                                <p class="text-xs text-rose-800 dark:text-rose-300 mt-1">No estás solo ni sola en esto. Hay personas que quieren escucharte y acompañarte ahora mismo, y pedir ayuda es un acto de valentía.</p>
                                 <button type="button" onclick="showHelpModal()" class="mt-3 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-semibold shadow-lg shadow-rose-900/20 transition-all active:scale-95">
                                     <i class="fa-solid fa-life-ring mr-1"></i> Ver líneas de apoyo
                                 </button>
@@ -301,40 +326,40 @@
                 </div>
 
                 <!-- Chat Box Area -->
-                <div class="lg:col-span-7 bg-mist/70 border border-sage/50 rounded-2xl p-4 sm:p-6 flex flex-col h-[560px] shadow-xl">
-                    <div class="flex flex-wrap items-center justify-between gap-y-1 pb-3 border-b border-sage/50">
+                <div class="lg:col-span-7 bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-4 sm:p-6 flex flex-col h-[560px] shadow-xl">
+                    <div class="flex flex-wrap items-center justify-between gap-y-1 pb-3 border-b border-sage/50 dark:border-darkborder">
                         <div class="flex items-center gap-2">
                             <i class="fa-solid fa-comments text-moss"></i>
-                            <h3 class="font-semibold text-forest">Chat de Descarga Empática</h3>
-                            <!-- Persistencia: indicador sutil de guardado automático -->
-                            <span id="autosave-indicator" class="inline-flex items-center gap-1 text-[11px] text-forest-soft" title="Tu conversación se guarda en este navegador">
+                            <h3 class="font-semibold text-forest dark:text-darktext">Chat de Descarga Empática</h3>
+                            <!-- Persistencia -->
+                            <span id="autosave-indicator" class="inline-flex items-center gap-1 text-[11px] text-forest-soft dark:text-darkmuted" title="Tu conversación se guarda en este navegador">
                                 <i class="fa-solid fa-floppy-disk"></i>
                                 <span id="autosave-text">Guardado automático</span>
                             </span>
-                            <button id="clear-chat-btn" type="button" onclick="clearConversation()" title="Borrar esta conversación" aria-label="Borrar esta conversación" class="text-forest-soft hover:text-forest transition-all">
+                            <button id="clear-chat-btn" type="button" onclick="clearConversation()" title="Borrar esta conversación" aria-label="Borrar esta conversación" class="text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext transition-all">
                                 <i class="fa-solid fa-trash-can text-[11px]"></i>
                             </button>
                         </div>
-                        <span class="text-xs text-forest-soft">100% Confidencial y Seguro</span>
+                        <span class="text-xs text-forest-soft dark:text-darkmuted">100% Confidencial y Seguro</span>
                     </div>
 
                     <!-- Message History -->
                     <div id="chat-messages" class="flex-1 overflow-y-auto py-4 space-y-4 pr-2">
                         <!-- Default Initial Message -->
                         <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-forest flex items-center justify-center text-cream font-bold shrink-0 text-sm">
+                            <div class="w-8 h-8 rounded-lg bg-forest dark:bg-moss flex items-center justify-center text-cream dark:text-darkbg font-bold shrink-0 text-sm">
                                 <i class="fa-solid fa-brain"></i>
                             </div>
-                            <div class="bg-cream border border-sage/60 rounded-2xl rounded-tl-none p-3.5 max-w-[85%] text-sm text-forest">
+                            <div class="bg-cream dark:bg-darkbg border border-sage/60 dark:border-darkborder rounded-2xl rounded-tl-none p-3.5 max-w-[85%] text-sm text-forest dark:text-darktext">
                                 "¡Hola! Qué bueno que estás aquí. Sé que a veces la universidad se pone pesada y parece que todo se junta. Respira, que no estás solo en esto. Podemos ordenar tus tareas, hacer una pausa para calmar la mente, o simplemente desahogarnos un rato. ¿Cómo va tu día hoy?"
                             </div>
                         </div>
                     </div>
 
                     <!-- Input Box -->
-                    <form onsubmit="handleChatSubmit(event)" class="mt-3 flex items-center gap-2 pt-3 border-t border-sage/50">
-                        <input type="text" id="chat-input" placeholder="Escribe lo que sientes o lo que tienes pendiente..." class="flex-1 bg-cream border border-sage focus:border-moss focus:ring-1 focus:ring-moss rounded-xl px-4 py-3 text-sm text-forest placeholder-forest-soft/70 outline-none transition-all">
-                        <button type="submit" class="bg-forest hover:bg-forest-soft text-cream p-3 rounded-xl font-semibold shadow-md transition-all">
+                    <form onsubmit="handleChatSubmit(event)" class="mt-3 flex items-center gap-2 pt-3 border-t border-sage/50 dark:border-darkborder">
+                        <input type="text" id="chat-input" autocomplete="off" name="chat_input_sura" placeholder="Escribe lo que sientes o lo que tienes pendiente..." class="flex-1 bg-cream dark:bg-darkbg border border-sage dark:border-darkborder focus:border-moss focus:ring-1 focus:ring-moss rounded-xl px-4 py-3 text-sm text-forest dark:text-darktext placeholder-forest-soft/70 dark:placeholder-darkmuted/70 outline-none transition-all">
+                        <button type="submit" class="bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg p-3 rounded-xl font-semibold shadow-md transition-all">
                             <i class="fa-solid fa-paper-plane text-base"></i>
                         </button>
                     </form>
@@ -345,19 +370,19 @@
 
         <!-- ================= TAB 2: DESGLOSE ANTI-CAOS ================= -->
         <section id="tab-deconstruct" class="hidden space-y-6">
-            <div class="bg-mist/70 border border-sage/50 rounded-2xl p-6 shadow-xl">
+            <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl">
                 <div class="max-w-2xl mb-6">
-                    <span class="text-xs uppercase tracking-widest text-forest font-semibold bg-moss/15 px-3 py-1 rounded-full border border-moss/30">
+                    <span class="text-xs uppercase tracking-widest text-forest dark:text-darktext font-semibold bg-moss/15 px-3 py-1 rounded-full border border-moss/30">
                         Desglose Inteligente de Tareas
                     </span>
-                    <h2 class="text-2xl font-bold text-forest mt-2">Transforma el caos en pasos ejecutables</h2>
-                    <p class="text-forest-soft text-sm mt-1">Escribe la entrega pesada o proyecto que te genera estrés y bot-n/a lo dividirá en micro-metas lógicas con tiempo estimado.</p>
+                    <h2 class="text-2xl font-bold text-forest dark:text-darktext mt-2">Transforma el caos en pasos ejecutables</h2>
+                    <p class="text-forest-soft dark:text-darkmuted text-sm mt-1">Escribe la entrega pesada o proyecto que te genera estrés y bot-n/a lo dividirá en micro-metas lógicas con tiempo estimado.</p>
                 </div>
 
                 <!-- Form to input giant task -->
                 <div class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="task-input" placeholder="Ej: Proyecto final de Programación / Ensayo de 10 páginas de Historia" class="flex-1 bg-cream border border-sage focus:border-moss rounded-xl px-4 py-3 text-sm text-forest placeholder-forest-soft/70 outline-none">
-                    <button onclick="deconstructTask()" class="bg-forest hover:bg-forest-soft text-cream font-semibold px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-forest/15">
+                    <input type="text" autocomplete="off" id="task-input" placeholder="Ej: Proyecto final de Programación / Ensayo de 10 páginas de Historia" class="flex-1 bg-cream dark:bg-darkbg border border-sage dark:border-darkborder focus:border-moss rounded-xl px-4 py-3 text-sm text-forest dark:text-darktext placeholder-forest-soft/70 dark:placeholder-darkmuted/70 outline-none">
+                    <button onclick="deconstructTask()" class="bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-semibold px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-forest/15">
                         <i class="fa-solid fa-wand-magic-sparkles"></i> Desglosar con IA
                     </button>
                 </div>
@@ -366,14 +391,14 @@
             <!-- Task Output Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Subtasks List -->
-                <div class="lg:col-span-8 bg-mist/70 border border-sage/50 rounded-2xl p-6 shadow-xl">
-                    <h3 class="font-bold text-lg text-forest mb-4 flex items-center justify-between">
+                <div class="lg:col-span-8 bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl">
+                    <h3 class="font-bold text-lg text-forest dark:text-darktext mb-4 flex items-center justify-between">
                         <span><i class="fa-solid fa-tasks text-moss mr-2"></i> Plan de Acción Sugerido</span>
-                        <span id="task-count-badge" class="text-xs bg-sage/50 text-forest px-2.5 py-1 rounded-full">0 Pasos</span>
+                        <span id="task-count-badge" class="text-xs bg-sage/50 dark:bg-darkborder text-forest dark:text-darktext px-2.5 py-1 rounded-full">0 Pasos</span>
                     </h3>
 
                     <div id="subtasks-container" class="space-y-3">
-                        <div class="text-center py-10 text-forest-soft border border-dashed border-sage rounded-xl">
+                        <div class="text-center py-10 text-forest-soft dark:text-darkmuted border border-dashed border-sage dark:border-darkborder rounded-xl">
                             <i class="fa-solid fa-layer-group text-3xl mb-2 text-moss"></i>
                             <p class="text-sm">Ingresa una tarea pesada arriba para generar tu plan de ataque sin ansiedad.</p>
                         </div>
@@ -381,19 +406,19 @@
                 </div>
 
                 <!-- Pomodoro Timer Box -->
-                <div class="lg:col-span-4 bg-mist/70 border border-sage/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xl">
-                    <span class="text-xs text-forest uppercase font-semibold tracking-wider">Temporizador de Foco Sin Presión</span>
+                <div class="lg:col-span-4 bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xl">
+                    <span class="text-xs text-forest dark:text-darktext uppercase font-semibold tracking-wider">Temporizador de Foco Sin Presión</span>
                     
                     <div class="my-6">
-                        <div class="text-5xl font-extrabold text-forest font-mono tracking-tight" id="pomo-timer">25:00</div>
-                        <span class="text-xs text-forest-soft mt-1 block">Modo Enfoque Relajado</span>
+                        <div class="text-5xl font-extrabold text-forest dark:text-darktext font-mono tracking-tight" id="pomo-timer">25:00</div>
+                        <span class="text-xs text-forest-soft dark:text-darkmuted mt-1 block">Modo Enfoque Relajado</span>
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <button id="pomo-btn" onclick="togglePomodoro()" class="bg-forest hover:bg-forest-soft text-cream font-semibold px-5 py-2.5 rounded-xl shadow-md transition-all">
+                        <button id="pomo-btn" onclick="togglePomodoro()" class="bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-semibold px-5 py-2.5 rounded-xl shadow-md transition-all">
                             <i class="fa-solid fa-play mr-1"></i> Iniciar
                         </button>
-                        <button onclick="resetPomodoro()" class="bg-sage/50 hover:bg-sage/70 text-forest font-semibold px-4 py-2.5 rounded-xl transition-all">
+                        <button onclick="resetPomodoro()" class="bg-sage/50 dark:bg-darkborder hover:bg-sage/70 dark:hover:bg-darkborder/80 text-forest dark:text-darktext font-semibold px-4 py-2.5 rounded-xl transition-all">
                             <i class="fa-solid fa-rotate-right"></i>
                         </button>
                     </div>
@@ -404,24 +429,24 @@
 
         <!-- ================= TAB 3: ESCUDO ANTI-BURNOUT (RESPIRACIÓN) ================= -->
         <section id="tab-breathing" class="hidden space-y-6">
-            <div class="bg-mist/70 border border-sage/50 rounded-2xl p-8 shadow-xl text-center flex flex-col items-center justify-center min-h-[480px]">
-                <span class="text-xs uppercase tracking-widest text-forest font-semibold bg-moss/15 px-3 py-1 rounded-full border border-moss/30 mb-4">
+            <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-8 shadow-xl text-center flex flex-col items-center justify-center min-h-[480px]">
+                <span class="text-xs uppercase tracking-widest text-forest dark:text-darktext font-semibold bg-moss/15 px-3 py-1 rounded-full border border-moss/30 mb-4">
                     Técnica de Regulación 4-7-8
                 </span>
                 
-                <h2 class="text-2xl font-bold text-forest mb-2">Pausa Activa Anti-Ansiedad</h2>
-                <p class="text-forest-soft text-sm max-w-md mb-8">Esta técnica científicamente probada desacelera tu ritmo cardíaco y reduce la respuesta de estrés en el cerebro en menos de 2 minutos.</p>
+                <h2 class="text-2xl font-bold text-forest dark:text-darktext mb-2">Pausa Activa Anti-Ansiedad</h2>
+                <p class="text-forest-soft dark:text-darkmuted text-sm max-w-md mb-8">Esta técnica científicamente probada desacelera tu ritmo cardíaco y reduce la respuesta de estrés en el cerebro en menos de 2 minutos.</p>
 
                 <!-- Interactive Breathing Visualizer -->
                 <div class="my-8 flex items-center justify-center relative">
                     <div id="breath-visualizer" class="breath-circle">
-                        <span id="breath-status-text" class="text-lg font-bold text-forest uppercase tracking-wider">Listo</span>
+                        <span id="breath-status-text" class="text-lg font-bold text-forest dark:text-darktext uppercase tracking-wider">Listo</span>
                     </div>
                 </div>
 
                 <!-- Action Button -->
                 <div class="flex items-center gap-4 mt-4">
-                    <button id="start-breath-btn" onclick="toggleBreathingCycle()" class="px-8 py-3.5 bg-forest hover:bg-forest-soft text-cream font-bold rounded-xl shadow-lg shadow-forest/20 transition-all text-base">
+                    <button id="start-breath-btn" onclick="toggleBreathingCycle()" class="px-8 py-3.5 bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-bold rounded-xl shadow-lg shadow-forest/20 transition-all text-base">
                         <i class="fa-solid fa-wind mr-2"></i> Iniciar Ejercicio
                     </button>
                 </div>
@@ -433,49 +458,49 @@
         <section id="tab-dashboard" class="hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Stat Card 1 -->
-                <div class="bg-mist/70 border border-sage/50 rounded-2xl p-5 shadow-xl">
+                <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-5 shadow-xl">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-forest-soft uppercase">Reducción de Estrés</span>
-                        <div class="w-8 h-8 rounded-lg bg-moss/15 text-forest flex items-center justify-center"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                        <span class="text-xs font-semibold text-forest-soft dark:text-darkmuted uppercase">Reducción de Estrés</span>
+                        <div class="w-8 h-8 rounded-lg bg-moss/15 text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-arrow-trend-down"></i></div>
                     </div>
-                    <div class="text-3xl font-bold text-forest mt-2">-42%</div>
-                    <span class="text-xs text-forest font-medium block mt-1"><i class="fa-solid fa-circle-check mr-1"></i> Respecto a la semana anterior</span>
+                    <div class="text-3xl font-bold text-forest dark:text-darktext mt-2">-42%</div>
+                    <span class="text-xs text-forest dark:text-darkmuted font-medium block mt-1"><i class="fa-solid fa-circle-check mr-1"></i> Respecto a la semana anterior</span>
                 </div>
 
                 <!-- Stat Card 2 -->
-                <div class="bg-mist/70 border border-sage/50 rounded-2xl p-5 shadow-xl">
+                <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-5 shadow-xl">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-forest-soft uppercase">Tiempo de Foco Saludable</span>
-                        <div class="w-8 h-8 rounded-lg bg-sage/40 text-forest flex items-center justify-center"><i class="fa-solid fa-clock"></i></div>
+                        <span class="text-xs font-semibold text-forest-soft dark:text-darkmuted uppercase">Tiempo de Foco Saludable</span>
+                        <div class="w-8 h-8 rounded-lg bg-sage/40 dark:bg-darkborder text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-clock"></i></div>
                     </div>
-                    <div class="text-3xl font-bold text-forest mt-2">14.5 hrs</div>
-                    <span class="text-xs text-forest font-medium block mt-1"><i class="fa-solid fa-shield-halved mr-1"></i> Con pausas activas</span>
+                    <div class="text-3xl font-bold text-forest dark:text-darktext mt-2">14.5 hrs</div>
+                    <span class="text-xs text-forest dark:text-darkmuted font-medium block mt-1"><i class="fa-solid fa-shield-halved mr-1"></i> Con pausas activas</span>
                 </div>
 
                 <!-- Stat Card 3 -->
-                <div class="bg-mist/70 border border-sage/50 rounded-2xl p-5 shadow-xl">
+                <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-5 shadow-xl">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-forest-soft uppercase">Sesiones de Desahogo</span>
-                        <div class="w-8 h-8 rounded-lg bg-forest/10 text-forest flex items-center justify-center"><i class="fa-solid fa-heart-pulse"></i></div>
+                        <span class="text-xs font-semibold text-forest-soft dark:text-darkmuted uppercase">Sesiones de Desahogo</span>
+                        <div class="w-8 h-8 rounded-lg bg-forest/10 dark:bg-darkborder text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-heart-pulse"></i></div>
                     </div>
-                    <div class="text-3xl font-bold text-forest mt-2">8 Sesiones</div>
-                    <span class="text-xs text-forest font-medium block mt-1"><i class="fa-solid fa-sparkles mr-1"></i> Impacto empático positivo</span>
+                    <div class="text-3xl font-bold text-forest dark:text-darktext mt-2">8 Sesiones</div>
+                    <span class="text-xs text-forest dark:text-darkmuted font-medium block mt-1"><i class="fa-solid fa-sparkles mr-1"></i> Impacto empático positivo</span>
                 </div>
             </div>
 
             <!-- Charts Row -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Stress Level Chart -->
-                <div class="bg-mist/70 border border-sage/50 rounded-2xl p-6 shadow-xl">
-                    <h3 class="font-bold text-forest mb-4"><i class="fa-solid fa-chart-area text-moss mr-2"></i> Niveles de Estrés Percibido (Semana Actual)</h3>
+                <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl">
+                    <h3 class="font-bold text-forest dark:text-darktext mb-4"><i class="fa-solid fa-chart-area text-moss mr-2"></i> Niveles de Estrés Percibido (Semana Actual)</h3>
                     <div class="h-64 relative">
                         <canvas id="stressChart"></canvas>
                     </div>
                 </div>
 
                 <!-- Task Completion vs Anxiety -->
-                <div class="bg-mist/70 border border-sage/50 rounded-2xl p-6 shadow-xl">
-                    <h3 class="font-bold text-forest mb-4"><i class="fa-solid fa-chart-bar text-moss mr-2"></i> Tareas Desglosadas vs Ansiedad Liberada</h3>
+                <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl">
+                    <h3 class="font-bold text-forest dark:text-darktext mb-4"><i class="fa-solid fa-chart-bar text-moss mr-2"></i> Tareas Desglosadas vs Ansiedad Liberada</h3>
                     <div class="h-64 relative">
                         <canvas id="tasksChart"></canvas>
                     </div>
@@ -486,33 +511,32 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-cream border-t border-sage/40 py-4 text-center text-xs text-forest-soft">
+    <footer class="bg-cream dark:bg-darkbg border-t border-sage/40 dark:border-darkborder py-4 text-center text-xs text-forest-soft dark:text-darkmuted">
         <p>Prototipo Funcional "bot-n/a" - Taller Práctico de Tecnologías Emergentes © 2026</p>
     </footer>
 
     <!-- MÓDULO 3: Modal de líneas de apoyo -->
     <div id="help-modal" class="hidden fixed inset-0 z-[100]" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
-        <div class="min-h-full flex items-center justify-center p-4 bg-forest/70 backdrop-blur-sm" onclick="if (event.target === this) closeHelpModal()">
-            <div class="relative w-full max-w-md bg-mist border border-sage rounded-2xl p-6 shadow-2xl">
-                <button id="help-modal-close" type="button" onclick="closeHelpModal()" aria-label="Cerrar" class="absolute top-3 right-3 w-8 h-8 rounded-lg bg-sage/50 hover:bg-sage/70 text-forest transition-all">
+        <div class="min-h-full flex items-center justify-center p-4 bg-forest/70 dark:bg-darkbg/80 backdrop-blur-sm" onclick="if (event.target === this) closeHelpModal()">
+            <div class="relative w-full max-w-md bg-mist dark:bg-darkcard border border-sage dark:border-darkborder rounded-2xl p-6 shadow-2xl">
+                <button id="help-modal-close" type="button" onclick="closeHelpModal()" aria-label="Cerrar" class="absolute top-3 right-3 w-8 h-8 rounded-lg bg-sage/50 dark:bg-darkborder hover:bg-sage/70 dark:hover:bg-darkborder/80 text-forest dark:text-darktext transition-all">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
-                <div class="w-11 h-11 rounded-xl bg-rose-200/70 text-rose-600 flex items-center justify-center mb-4">
+                <div class="w-11 h-11 rounded-xl bg-rose-200/70 dark:bg-rose-900/50 text-rose-600 dark:text-rose-300 flex items-center justify-center mb-4">
                     <i class="fa-solid fa-heart-pulse text-lg"></i>
                 </div>
-                <h2 id="help-modal-title" class="text-xl font-bold text-forest mb-2">Lo que sientes importa</h2>
-                <p class="text-sm text-forest-soft mb-5">Pedir ayuda es un acto de valentía, y no tienes que cargar con esto en soledad. Hay personas listas para escucharte ahora mismo, sin juzgarte. Da un paso pequeño: habla con alguien de confianza o con un profesional.</p>
+                <h2 id="help-modal-title" class="text-xl font-bold text-forest dark:text-darktext mb-2">Lo que sientes importa</h2>
+                <p class="text-sm text-forest-soft dark:text-darkmuted mb-5">Pedir ayuda es un acto de valentía, y no tienes que cargar con esto en soledad. Hay personas listas para escucharte ahora mismo, sin juzgarte. Da un paso pequeño: habla con alguien de confianza o con un profesional.</p>
 
                 <div class="space-y-3">
-                    <!-- Cambia 911 por el número de emergencias de tu país (p. ej. 112 en España, 123 en Colombia) -->
                     <a href="tel:911" class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold shadow-lg shadow-rose-900/20 transition-all">
                         <i class="fa-solid fa-phone"></i> Llamar al 911 (emergencias)
                     </a>
-                    <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-forest hover:bg-forest-soft text-cream font-semibold shadow-lg shadow-forest/20 transition-all">
+                    <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-semibold shadow-lg shadow-forest/20 transition-all">
                         <i class="fa-solid fa-earth-americas"></i> Encontrar una línea de ayuda en tu país
                     </a>
                 </div>
-                <p class="text-xs text-forest-soft mt-4">Si estás en peligro inmediato, llama a emergencias. El 911 es un número genérico: si tu país usa otro, marca el que corresponda.</p>
+                <p class="text-xs text-forest-soft dark:text-darkmuted mt-4">Si estás en peligro inmediato, llama a emergencias. El 911 es un número genérico: si tu país usa otro, marca el que corresponda.</p>
             </div>
         </div>
     </div>
@@ -527,19 +551,17 @@
         let pomoInterval = null;
         let breathingInterval = null;
         let isBreathingActive = false;
-        let selectedVoiceGender = 'female'; // 'female' | 'male' (se cambia con #voice-select)
-        let currentAvatarIcon = 'fa-sparkles'; // ícono del orbe cuando está en reposo
+        let selectedVoiceGender = 'female'; 
+        let currentAvatarIcon = 'fa-sparkles'; 
 
         // Web Speech API Initialization
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition = null;
         const synth = window.speechSynthesis;
-
-        let voiceHandled = false; // true cuando ya hubo resultado o error (para que onend no pise el estado)
+        let voiceHandled = false;
 
         if (SpeechRecognition) {
             recognition = new SpeechRecognition();
-            // Usa el idioma del navegador si es español (es-CO, es-MX...), si no, es-ES
             recognition.lang = (navigator.language || '').toLowerCase().startsWith('es') ? navigator.language : 'es-ES';
             recognition.continuous = false;
             recognition.interimResults = false;
@@ -555,7 +577,6 @@
             recognition.onend = () => {
                 isListening = false;
                 document.getElementById('mic-btn-text').innerText = 'Hablar con bot-n/a';
-                // Solo volver a "lista" si no hubo error/resultado y bot-n/a no está hablando
                 if (!voiceHandled && !isSpeaking) {
                     updateOrbState('calm', 'bot-n/a está listo', 'No escuché nada. Presiona el micrófono e inténtalo de nuevo.');
                 }
@@ -570,55 +591,70 @@
 
             recognition.onerror = (event) => {
                 voiceHandled = true;
-                console.error('Error de reconocimiento de voz:', event.error);
                 const messages = {
-                    'not-allowed': 'El navegador bloqueó el micrófono. Pulsa el candado 🔒 junto a la dirección y permite el micrófono. Si abriste el archivo con doble clic (file://), ábrelo desde localhost o https.',
-                    'service-not-allowed': 'El navegador no permite el reconocimiento de voz en esta página. Ábrela desde localhost o https.',
-                    'no-speech': 'No te escuché. Habla un poco más cerca del micrófono e inténtalo otra vez.',
-                    'audio-capture': 'No encuentro ningún micrófono. Revisa que esté conectado y seleccionado en el sistema.',
-                    'network': 'El reconocimiento de voz necesita internet (usa el servicio de Google). Revisa tu conexión; en Brave está desactivado por defecto.',
-                    'language-not-supported': 'El idioma de reconocimiento no está disponible en este navegador.',
-                    'aborted': ''
+                    'not-allowed': 'El navegador bloqueó el micrófono. Permítelo en el candado 🔒.',
+                    'no-speech': 'No te escuché. Habla más cerca del micrófono.',
+                    'audio-capture': 'No encuentro ningún micrófono.',
+                    'network': 'El reconocimiento de voz necesita internet.'
                 };
                 const msg = messages[event.error];
-                if (msg === '') return; // cancelación manual, no mostrar nada
+                if (msg === '') return;
                 updateOrbState('calm', 'No pude escucharte', msg || ('Error de voz: ' + event.error));
             };
-        } else {
-            console.warn('Speech Recognition not supported on this browser.');
-            document.getElementById('voice-status-badge').innerHTML = '<i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Solo Texto';
         }
 
-        // ---- Selección de voz (femenina / masculina) ----
+        // ---- Control de Modo Oscuro ----
+        function toggleDarkMode() {
+            const htmlEl = document.documentElement;
+            const iconEl = document.getElementById('dark-mode-icon');
+            if (htmlEl.classList.contains('dark')) {
+                htmlEl.classList.remove('dark');
+                localStorage.setItem('bot_na_theme', 'light');
+                iconEl.className = 'fa-solid fa-moon text-xs';
+            } else {
+                htmlEl.classList.add('dark');
+                localStorage.setItem('bot_na_theme', 'dark');
+                iconEl.className = 'fa-solid fa-sun text-xs text-amber-400';
+            }
+        }
+
+        // Cargar preferencia guardada de modo oscuro
+        (function() {
+            const savedTheme = localStorage.getItem('bot_na_theme');
+            const iconEl = document.getElementById('dark-mode-icon');
+            if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+                if (iconEl) iconEl.className = 'fa-solid fa-moon text-xs';
+            } else {
+                document.documentElement.classList.add('dark');
+                if (iconEl) iconEl.className = 'fa-solid fa-sun text-xs text-amber-400';
+            }
+        })();
+
+        // ---- Selección de voz ----
         const normVoiceName = (str) => (str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         const VOICE_HINTS = {
-            female: ['Mónica', 'Sabina', 'Helena', 'Google español', 'Laura', 'Elvira', 'Dalia', 'Paulina', 'Lucía', 'Elena', 'Salomé', 'Camila'].map(normVoiceName),
-            male:   ['Jorge', 'Diego', 'Carlos', 'Pablo', 'Raúl', 'Álvaro', 'Juan', 'Alonso', 'Gonzalo', 'Tomás'].map(normVoiceName)
+            female: ['Mónica', 'Sabina', 'Helena', 'Google español', 'Laura', 'Elvira', 'Dalia', 'Paulina', 'Lucía', 'Elena'].map(normVoiceName),
+            male:   ['Jorge', 'Diego', 'Carlos', 'Pablo', 'Raúl', 'Álvaro', 'Juan'].map(normVoiceName)
         };
 
         function pickSpanishVoice(gender) {
             if (!synth) return null;
-            // Solo voces en español
             const spanish = synth.getVoices().filter(v => (v.lang || '').toLowerCase().replace('_', '-').startsWith('es'));
             if (!spanish.length) return null;
             const matches = (voice, names) => names.some(n => normVoiceName(voice.name).includes(n));
             const other = gender === 'female' ? 'male' : 'female';
-            return spanish.find(v => matches(v, VOICE_HINTS[gender]))        // una voz con nombre del género pedido
-                || spanish.find(v => !matches(v, VOICE_HINTS[other]))        // si no, una que no sea del otro género
-                || spanish[0];
+            return spanish.find(v => matches(v, VOICE_HINTS[gender])) || spanish.find(v => !matches(v, VOICE_HINTS[other])) || spanish[0];
         }
 
-        // Las voces se cargan de forma asíncrona en Chrome/Edge: pedirlas pronto las deja listas
         if (synth) {
             synth.getVoices();
             synth.onvoiceschanged = () => synth.getVoices();
         }
 
-        // Voice Synthesis (bot-n/a Speaks)
         function speakText(text) {
             if (!synth) return;
-            synth.cancel(); // Stop any previous speech
-
+            synth.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             const voice = pickSpanishVoice(selectedVoiceGender);
             if (voice) {
@@ -627,7 +663,7 @@
             } else {
                 utterance.lang = 'es-ES';
             }
-            utterance.rate = 0.95; // Calm, relaxed tone
+            utterance.rate = 0.95;
             utterance.pitch = selectedVoiceGender === 'male' ? 0.85 : 1.2;
 
             utterance.onstart = () => {
@@ -643,35 +679,24 @@
             synth.speak(utterance);
         }
 
-        // ---- Personalización del avatar ----
         function changeAvatar(iconName) {
             if (!/^fa-[a-z0-9-]+$/.test(iconName)) return;
             currentAvatarIcon = iconName;
-
-            // Resaltar el botón elegido
             document.querySelectorAll('[data-avatar]').forEach(btn => {
                 const on = btn.dataset.avatar === iconName;
                 btn.classList.toggle('border-moss', on);
                 btn.classList.toggle('bg-moss/15', on);
                 btn.classList.toggle('border-sage', !on);
-                btn.classList.toggle('bg-cream', !on);
             });
-
-            // Si el orbe está en reposo, cambiar el ícono ya; si está hablando/escuchando/pensando,
-            // se aplicará al volver al reposo (updateOrbState usa currentAvatarIcon)
             const orb = document.getElementById('sura-orb');
             const busy = ['speaking', 'listening', 'thinking'].some(c => orb.classList.contains(c));
             if (!busy) {
-                document.getElementById('orb-icon').className = 'fa-solid ' + iconName + ' text-3xl text-forest/80';
+                document.getElementById('orb-icon').className = 'fa-solid ' + iconName + ' text-3xl text-forest/80 dark:text-darktext';
             }
         }
 
-        // ---- Modal de líneas de apoyo ----
         function showHelpModal() {
-            const modal = document.getElementById('help-modal');
-            modal.classList.remove('hidden');
-            const closeBtn = document.getElementById('help-modal-close');
-            if (closeBtn) closeBtn.focus();
+            document.getElementById('help-modal').classList.remove('hidden');
         }
 
         function closeHelpModal() {
@@ -686,7 +711,6 @@
             updateOrbState('calm', 'bot-n/a está listo', 'Voz detenida.');
         }
 
-        // Orb Avatar State Controller
         function updateOrbState(state, title, desc) {
             const orb = document.getElementById('sura-orb');
             const icon = document.getElementById('orb-icon');
@@ -698,100 +722,70 @@
             if (desc) descEl.innerText = desc;
 
             if (state === 'speaking') {
-                icon.className = 'fa-solid fa-volume-high text-3xl text-forest/90 animate-pulse';
+                icon.className = 'fa-solid fa-volume-high text-3xl text-forest/90 dark:text-darktext animate-pulse';
             } else if (state === 'listening') {
                 icon.className = 'fa-solid fa-microphone text-3xl text-cream/90 animate-bounce';
             } else if (state === 'thinking') {
                 icon.className = 'fa-solid fa-rotate text-3xl text-cream/90 animate-spin';
             } else {
-                icon.className = 'fa-solid ' + currentAvatarIcon + ' text-3xl text-forest/80';
+                icon.className = 'fa-solid ' + currentAvatarIcon + ' text-3xl text-forest/80 dark:text-darktext';
             }
         }
 
-        // Helper: limpia el input de texto tras reconocer voz
         function appendChatMessageSafeClear() {
             const input = document.getElementById('chat-input');
             if (input) input.value = '';
         }
 
-        // Microphone Button Handler
         async function toggleMic() {
             if (!recognition) {
-                updateOrbState('calm', 'Voz no disponible', 'Este navegador no soporta reconocimiento de voz. Usa Chrome o Edge, o escribe tus mensajes.');
+                updateOrbState('calm', 'Voz no disponible', 'Usa Chrome o Edge, o escribe tus mensajes.');
                 return;
             }
-
-            // Si ya está escuchando, detener
             if (isListening) {
                 recognition.stop();
                 return;
             }
-
-            // El micrófono solo funciona en contexto seguro (https, localhost o file://)
-            if (!window.isSecureContext) {
-                updateOrbState('calm', 'Se necesita conexión segura', 'Abre la página con https:// o desde localhost para usar el micrófono.');
-                return;
-            }
-
-            // Cortar la voz de bot-n/a sin tocar el reconocimiento
             if (synth) synth.cancel();
             isSpeaking = false;
 
-            // Pedir permiso de micrófono de forma explícita (así el navegador muestra el aviso)
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    stream.getTracks().forEach(t => t.stop()); // liberar el micrófono para el reconocimiento
+                    stream.getTracks().forEach(t => t.stop());
                 } catch (err) {
-                    console.error('Permiso de micrófono denegado:', err);
-                    const noMic = err && (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError');
-                    updateOrbState('calm', 'No pude usar el micrófono',
-                        noMic ? 'No encuentro ningún micrófono conectado.'
-                              : 'Permite el micrófono en el candado 🔒 de la barra de direcciones y vuelve a intentarlo.');
+                    updateOrbState('calm', 'Micrófono denegado', 'Permite el micrófono en el navegador.');
                     return;
                 }
             }
-
-            try {
-                recognition.start();
-            } catch (e) {
-                console.error(e);
-                // Si quedó en un estado raro, reiniciar
-                try { recognition.abort(); } catch (_) {}
-                setTimeout(() => { try { recognition.start(); } catch (_) {} }, 250);
-            }
+            try { recognition.start(); } catch (e) { recognition.abort(); }
         }
 
-        // Navigation Switcher
         function switchTab(tabId) {
             ['assistant', 'deconstruct', 'breathing', 'dashboard'].forEach(id => {
                 document.getElementById('tab-' + id).classList.add('hidden');
                 const btn = document.getElementById('nav-' + id);
                 if (btn) {
-                    btn.classList.remove('bg-forest', 'text-cream', 'font-semibold', 'shadow');
-                    btn.classList.add('text-forest-soft');
+                    btn.classList.remove('bg-forest', 'text-cream', 'dark:bg-moss', 'dark:text-darkbg', 'font-semibold', 'shadow');
+                    btn.classList.add('text-forest-soft', 'dark:text-darkmuted');
                 }
             });
 
             document.getElementById('tab-' + tabId).classList.remove('hidden');
             const activeBtn = document.getElementById('nav-' + tabId);
             if (activeBtn) {
-                activeBtn.classList.add('bg-forest', 'text-cream', 'font-semibold', 'shadow');
-                activeBtn.classList.remove('text-forest-soft');
+                activeBtn.classList.add('bg-forest', 'text-cream', 'dark:bg-moss', 'dark:text-darkbg', 'font-semibold', 'shadow');
+                activeBtn.classList.remove('text-forest-soft', 'dark:text-darkmuted');
             }
 
-            if (tabId === 'dashboard') {
-                initCharts();
-            }
+            if (tabId === 'dashboard') initCharts();
         }
 
-        // Chat Submission & Logic
         function handleChatSubmit(e) {
             e.preventDefault();
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
             if (!message || isWaitingReply) return;
-
             input.value = '';
             processUserMessage(message);
         }
@@ -800,230 +794,106 @@
             processUserMessage(promptText);
         }
 
-        // Historial de la conversación que se envía al modelo
         let chatHistory = [];
         let isWaitingReply = false;
+        let initialGreetingHTML = '';
+        let pendingResumeHistory = null;
+        let resumeOptionsEl = null;
+        let serverAvailable = false;
+        let persistenceReady = Promise.resolve();
+        let syncQueue = Promise.resolve();
 
-        async function processUserMessage(userMsg) {
-            if (isWaitingReply) return;
-            isWaitingReply = true;
-            await persistenceReady; // espera a saber si hay una conversación guardada (máx. unos segundos)
-            // Si el usuario escribe sin elegir entre "Reanudar" y "Nuevo chat", se reanuda (así no se pierde nada guardado)
-            if (pendingResumeHistory) resumeChat();
-
-            appendChatMessage('user', userMsg);
-            chatHistory.push({ role: 'user', content: userMsg });
-            saveChat();
-            updateOrbState('thinking', 'bot-n/a está procesando...', 'Pensando una respuesta para ti...');
-
-            let reply;
-            try {
-                const res = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: chatHistory.slice(-20) })
-                });
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                const data = await res.json();
-                if (!data.reply) throw new Error('Respuesta vacía');
-                reply = data.reply;
-            } catch (err) {
-                // Sin servidor o sin clave: se usan las respuestas locales de respaldo
-                console.warn('No se pudo usar el modelo, uso respuestas locales:', err.message);
-                reply = generateEmpatheticResponse(userMsg);
-            }
-
-            // Sistema de alerta: si el modelo marca una crisis, mostrar el botón de ayuda y limpiar la etiqueta
-            // (también se activa si el propio mensaje del usuario contiene frases de crisis, aunque el modelo no use la etiqueta)
-            if (reply.includes('[ALERTA_AYUDA]') || isCrisisText(userMsg)) {
-                reply = reply.replace(/\[ALERTA_AYUDA\]/g, '').trim(); // Limpia la etiqueta
-                document.getElementById('emergency-help-panel').classList.remove('hidden'); // Muestra el botón
-                document.getElementById('header-help-btn').classList.add('animate-pulse'); // Resalta el acceso fijo
-                if (!reply) reply = 'Estoy aquí contigo. Mira el aviso de ayuda que apareció: hay personas que pueden acompañarte ahora mismo.';
-            }
-
-            chatHistory.push({ role: 'assistant', content: reply });
-            saveChat();
-            appendChatMessage('sura', reply);
-            isWaitingReply = false;
-
-            if (synth) {
-                speakText(reply);
-            } else {
-                updateOrbState('calm', 'bot-n/a está listo', 'Presiona el micrófono o escribe para conversar.');
-            }
-        }
-
-        // =====================================================================
-        // Persistencia del chat: este navegador (localStorage) + archivo en el servidor
-        // El servidor identifica al navegador con una cookie anónima y guarda la conversación en un archivo.
-        // Si el servidor no responde, todo sigue funcionando solo con localStorage.
-        // =====================================================================
-        const CHAT_HISTORY_KEY = 'bot_na_chat_history'; // arreglo chatHistory en JSON
-        const CHAT_ACTIVE_KEY = 'bot_na_chat_active';   // 'true' si hay una conversación en curso, 'false' si se cerró/borró
-        const RESUME_PROMPT_TEXT = '¡Hola de nuevo! Veo que tenemos una conversación pendiente. ¿Quieres reanudar donde lo dejamos o prefieres empezar de cero?';
-        const PRIVACY_NOTICE_TEXT = 'Un dato rápido: para que puedas retomar la conversación cuando vuelvas, la guardo de forma anónima en el servidor de este proyecto, sin tu nombre ni datos personales. Puedes borrarla cuando quieras con el ícono de la papelera.';
-
-        let initialGreetingHTML = '';      // saludo original de bot-n/a (se captura al cargar)
-        let pendingResumeHistory = null;   // historial guardado a la espera de que el usuario elija
-        let resumeOptionsEl = null;        // bloque con los botones Reanudar / Nuevo chat
-        let serverAvailable = false;       // true si /api/session respondió
-        let persistenceReady = Promise.resolve(); // se completa cuando termina de cargarse lo guardado
-        let syncQueue = Promise.resolve(); // cola para que los guardados lleguen al servidor en orden
-
-        // Deja solo mensajes con forma válida
         function cleanMessages(list) {
             if (!Array.isArray(list)) return [];
-            return list.filter(m => m && (m.role === 'user' || m.role === 'assistant')
-                && typeof m.content === 'string' && m.content.trim() !== '')
-                .map(m => ({ role: m.role, content: m.content }));
+            return list.filter(m => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string' && m.content.trim() !== '');
         }
 
-        // Indicador "Guardado automático": no debe prometer algo que no ocurre
         function setAutosaveStatus(ok) {
             const el = document.getElementById('autosave-text');
             if (el) el.innerText = ok ? 'Guardado automático' : 'Guardado no disponible';
         }
 
         function postJSON(url, body) {
-            return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) })
-                .then(res => { if (!res.ok) throw new Error('HTTP ' + res.status); return res; });
+            return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
         }
 
-        // Envía al servidor la conversación completa (en orden, sin bloquear el chat)
         function syncToServer() {
             if (!serverAvailable) return;
             const snapshot = chatHistory.map(m => ({ role: m.role, content: m.content }));
-            syncQueue = syncQueue
-                .then(() => postJSON('/api/history', { messages: snapshot }))
-                .catch(err => console.warn('No se pudo guardar el chat en el servidor:', err.message));
+            syncQueue = syncQueue.then(() => postJSON('/api/history', { messages: snapshot })).catch(() => {});
         }
 
-        // Guarda el historial y el estado del chat
         function saveChat() {
             let localOk = true;
             try {
-                localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(chatHistory));
-                localStorage.setItem(CHAT_ACTIVE_KEY, JSON.stringify(chatHistory.length > 0));
-            } catch (err) {
-                // Modo privado, almacenamiento bloqueado o lleno: el chat sigue funcionando
-                console.warn('No se pudo guardar el chat en el navegador:', err.message);
-                localOk = false;
-            }
+                localStorage.setItem('bot_na_chat_history', JSON.stringify(chatHistory));
+            } catch (err) { localOk = false; }
             syncToServer();
             setAutosaveStatus(localOk || serverAvailable);
         }
 
-        // Lee y valida el historial guardado en el navegador (devuelve [] si no hay o está dañado)
         function loadSavedChat() {
             try {
-                const raw = localStorage.getItem(CHAT_HISTORY_KEY);
-                if (!raw) return [];
-                return cleanMessages(JSON.parse(raw));
-            } catch (err) {
-                console.warn('No se pudo leer el chat guardado:', err.message);
-                return [];
-            }
+                const raw = localStorage.getItem('bot_na_chat_history');
+                return raw ? cleanMessages(JSON.parse(raw)) : [];
+            } catch (err) { return []; }
         }
 
         function removeResumeOptions() {
-            if (resumeOptionsEl) {
-                resumeOptionsEl.remove(); // los botones desaparecen del DOM
-                resumeOptionsEl = null;
-            }
+            if (resumeOptionsEl) { resumeOptionsEl.remove(); resumeOptionsEl = null; }
         }
 
-        // Botón A: renderiza el historial guardado y lo restaura como conversación activa
         function resumeChat() {
             if (!pendingResumeHistory) return;
             const saved = pendingResumeHistory;
             pendingResumeHistory = null;
             removeResumeOptions();
-
             saved.forEach(m => appendChatMessage(m.role === 'user' ? 'user' : 'sura', m.content));
             chatHistory = saved.map(m => ({ role: m.role, content: m.content }));
-
-            try { localStorage.setItem(CHAT_ACTIVE_KEY, 'true'); } catch (err) { /* sin almacenamiento */ }
         }
 
-        // Botón B: borra lo guardado (navegador y servidor) y vuelve al saludo inicial
         function startNewChat() {
             pendingResumeHistory = null;
             removeResumeOptions();
-            try {
-                localStorage.removeItem('bot_na_chat_history');
-                localStorage.setItem(CHAT_ACTIVE_KEY, 'false');
-            } catch (err) { /* sin almacenamiento */ }
-
-            if (serverAvailable) {
-                // En la misma cola, para que un guardado pendiente no "resucite" la conversación borrada
-                syncQueue = syncQueue
-                    .then(() => postJSON('/api/history/clear'))
-                    .catch(err => console.warn('No se pudo borrar el chat del servidor:', err.message));
-            }
-
+            try { localStorage.removeItem('bot_na_chat_history'); } catch (err) {}
+            if (serverAvailable) { syncQueue = syncQueue.then(() => postJSON('/api/history/clear')).catch(() => {}); }
             chatHistory = [];
             document.getElementById('chat-messages').innerHTML = initialGreetingHTML;
         }
 
-        // Papelera: borrar la conversación en cualquier momento
         function clearConversation() {
-            if (isWaitingReply) {
-                alert('Espera a que bot-n/a termine de responder para borrar la conversación.');
-                return;
-            }
-            if (!confirm('¿Borrar esta conversación? Se eliminará de este navegador y del servidor.')) return;
+            if (isWaitingReply) return;
+            if (!confirm('¿Borrar esta conversación?')) return;
             startNewChat();
         }
 
-        // Pide al servidor mi sesión anónima y mi conversación anterior (null si no responde)
         async function fetchServerSession() {
-            let timer;
             try {
-                const res = await Promise.race([
-                    fetch('/api/session', { cache: 'no-store' }),
-                    new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('tiempo agotado')), 4000); })
-                ]);
-                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const res = await fetch('/api/session', { cache: 'no-store' });
+                if (!res.ok) throw new Error();
                 return await res.json();
-            } catch (err) {
-                console.warn('Historial del servidor no disponible:', err.message);
-                return null;
-            } finally {
-                clearTimeout(timer);
-            }
+            } catch (err) { return null; }
         }
 
-        // Al cargar: si hay una conversación guardada, ofrecer reanudarla
         async function initChatPersistence() {
             const container = document.getElementById('chat-messages');
-            initialGreetingHTML = container.innerHTML; // saludo original, tal como está en la página
-
+            initialGreetingHTML = container.innerHTML;
             const session = await fetchServerSession();
             let serverSaved = [];
             if (session) {
                 serverAvailable = true;
                 serverSaved = cleanMessages(session.messages);
-                const indicator = document.getElementById('autosave-indicator');
-                if (indicator && session.userCode) {
-                    indicator.title = 'Tu conversación se guarda de forma anónima (ID ' + session.userCode + ')';
-                }
             }
             const localSaved = loadSavedChat();
-            const saved = localSaved.length > serverSaved.length ? localSaved : serverSaved; // la más completa
-            const showNotice = !!(session && session.isNew); // primera vez de este navegador
+            const saved = localSaved.length > serverSaved.length ? localSaved : serverSaved;
 
-            if (!saved.length) {
-                if (showNotice) appendChatMessage('sura', PRIVACY_NOTICE_TEXT); // visual: no entra a chatHistory
-                return; // nada guardado: se queda el saludo por defecto
-            }
+            if (!saved.length) return;
 
             pendingResumeHistory = saved;
-            container.innerHTML = ''; // no se muestra el saludo por defecto
-            appendChatMessage('sura', RESUME_PROMPT_TEXT); // solo visual: no se agrega a chatHistory
+            container.innerHTML = '';
+            appendChatMessage('sura', '¡Hola de nuevo! Veo que tenemos una conversación pendiente. ¿Quieres reanudarla o empezar de cero?');
 
-            // Botones debajo del mensaje, integrados en la conversación
-            const btnClass = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-forest hover:bg-forest-soft text-cream transition-all active:scale-95';
+            const btnClass = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-forest hover:bg-forest-soft dark:bg-moss dark:text-darkbg text-cream transition-all';
             resumeOptionsEl = document.createElement('div');
             resumeOptionsEl.className = 'flex items-start gap-3';
             resumeOptionsEl.innerHTML = `
@@ -1034,8 +904,48 @@
                 </div>
             `;
             container.appendChild(resumeOptionsEl);
-            if (showNotice) appendChatMessage('sura', PRIVACY_NOTICE_TEXT);
             container.scrollTop = container.scrollHeight;
+        }
+
+        async function processUserMessage(userMsg) {
+            if (isWaitingReply) return;
+            isWaitingReply = true;
+            await persistenceReady;
+            if (pendingResumeHistory) resumeChat();
+
+            appendChatMessage('user', userMsg);
+            chatHistory.push({ role: 'user', content: userMsg });
+            saveChat();
+            updateOrbState('thinking', 'bot-n/a está procesando...', 'Pensando...');
+
+            let reply;
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: chatHistory.slice(-20) })
+                });
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                reply = data.reply;
+            } catch (err) {
+                reply = generateEmpatheticResponse(userMsg);
+            }
+
+            if (reply.includes('[ALERTA_AYUDA]') || isCrisisText(userMsg)) {
+                reply = reply.replace(/\[ALERTA_AYUDA\]/g, '').trim();
+                document.getElementById('emergency-help-panel').classList.remove('hidden');
+                document.getElementById('header-help-btn').classList.add('animate-pulse');
+                if (!reply) reply = 'Estoy aquí contigo. Revisa el aviso de ayuda que apareció.';
+            }
+
+            chatHistory.push({ role: 'assistant', content: reply });
+            saveChat();
+            appendChatMessage('sura', reply);
+            isWaitingReply = false;
+
+            if (synth) speakText(reply);
+            else updateOrbState('calm', 'bot-n/a está listo', 'Listo.');
         }
 
         function escapeHtml(str) {
@@ -1049,39 +959,33 @@
 
             if (sender === 'user') {
                 msgDiv.innerHTML = `
-                    <div class="ml-auto bg-moss/25 border border-moss/50 rounded-2xl rounded-tr-none p-3.5 max-w-[85%] text-sm text-forest">
+                    <div class="ml-auto bg-moss/25 border border-moss/50 rounded-2xl rounded-tr-none p-3.5 max-w-[85%] text-sm text-forest dark:text-darktext">
                         ${escapeHtml(text)}
                     </div>
-                    <div class="w-8 h-8 rounded-lg bg-sage/50 flex items-center justify-center text-forest-soft font-bold shrink-0 text-xs">
+                    <div class="w-8 h-8 rounded-lg bg-sage/50 dark:bg-darkborder flex items-center justify-center text-forest-soft dark:text-darkmuted font-bold shrink-0 text-xs">
                         Tú
                     </div>
                 `;
             } else {
                 msgDiv.innerHTML = `
-                    <div class="w-8 h-8 rounded-lg bg-forest flex items-center justify-center text-cream font-bold shrink-0 text-sm">
+                    <div class="w-8 h-8 rounded-lg bg-forest dark:bg-moss flex items-center justify-center text-cream dark:text-darkbg font-bold shrink-0 text-sm">
                         <i class="fa-solid fa-brain"></i>
                     </div>
-                    <div class="bg-cream border border-sage/60 rounded-2xl rounded-tl-none p-3.5 max-w-[85%] text-sm text-forest">
+                    <div class="bg-cream dark:bg-darkbg border border-sage/60 dark:border-darkborder rounded-2xl rounded-tl-none p-3.5 max-w-[85%] text-sm text-forest dark:text-darktext">
                         ${escapeHtml(text).replace(/\n/g, '<br>')}
                     </div>
                 `;
             }
-
             messagesContainer.appendChild(msgDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        // Empathetic AI Response Simulator
-
-        // Frases que indican una posible crisis (en minúsculas y sin tildes)
-        const CRISIS_TERMS = ['suicid', 'quitar la vida', 'quitarme la vida', 'quitarse la vida', 'quitarle la vida', 'terminar con mi vida', 'acabar con mi vida', 'matarme', 'matarse', 'no quiero vivir', 'no quiero seguir viviendo', 'quiero morir', 'quiero morirme', 'morirme', 'hacerme dano', 'hacerse dano', 'lastimarme', 'cortarme las venas', 'acabar con todo', 'mejor muerto', 'mejor muerta', 'desaparecer para siempre', 'no vale la pena vivir', 'autolesion', 'no quiero existir', 'no quiero despertar'];
+        const CRISIS_TERMS = ['suicid', 'quitar la vida', 'matarme', 'no quiero vivir', 'quiero morir', 'hacerme dano'];
         function isCrisisText(text) {
             const t = (text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
             return CRISIS_TERMS.some(term => t.includes(term));
         }
         let lastResponse = '';
-
-        // Elige una respuesta al azar, evitando repetir la anterior
         function pick(options) {
             const pool = options.filter(o => o !== lastResponse);
             const choice = pool[Math.floor(Math.random() * pool.length)] || options[0];
@@ -1090,119 +994,17 @@
         }
 
         function generateEmpatheticResponse(input) {
-            // Minúsculas y sin tildes para que "ansiedad"/"ansiedád" o "estrés"/"estres" coincidan igual
             const text = input.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-            const has = (...words) => words.some(w => text.includes(w));
-
-            // Crisis: prioridad máxima (también cuando el modelo falla o bloquea la respuesta)
             if (isCrisisText(input)) {
-                return pick([
-                    "Lo que me cuentas es muy importante y me preocupa cómo te sientes. No tienes que pasar por esto en soledad. Por favor, habla ahora mismo con alguien de confianza o comunícate con los servicios de emergencia o la línea de ayuda de tu país. Yo me quedo aquí contigo. [ALERTA_AYUDA]",
-                    "Gracias por decírmelo, sé que no es fácil. Tu vida importa. Si estás en peligro o piensas hacerte daño, llama ya a los servicios de emergencia de tu país o busca a alguien cercano que pueda acompañarte ahora. Si quieres, sigo aquí contigo mientras tanto. [ALERTA_AYUDA]"
-                ]);
+                return "Lo que me cuentas es muy importante y me preocupa cómo te sientes. Por favor, habla con alguien de confianza o comunícate con emergencias. [ALERTA_AYUDA]";
             }
-
-            // Saludos
-            if (/^(hola|buenas|buenos dias|buenas tardes|buenas noches|hey|holi|que tal)\b/.test(text)) {
-                return pick([
-                    "¡Hola! Me alegra que estés aquí. ¿Cómo te sientes hoy con la universidad?",
-                    "Hola, qué bueno verte por aquí. Cuéntame, ¿qué tienes en la cabeza hoy?",
-                    "¡Hola! Aquí estoy para escucharte. ¿Qué es lo que más te pesa en este momento?"
-                ]);
-            }
-
-            // Agradecimientos
-            if (has('gracias', 'muchas gracias', 'te agradezco')) {
-                return pick([
-                    "¡Con mucho gusto! Aquí estaré cuando me necesites. Recuerda ir paso a paso.",
-                    "Para eso estoy. Y recuerda: pedir ayuda también es una forma de ser fuerte.",
-                    "Me alegra haber ayudado. Si más tarde sientes que se acumula todo otra vez, vuelve cuando quieras."
-                ]);
-            }
-
-            // Preguntas sobre qué puede hacer bot-n/a / cómo ayuda
-            if (has('ayudarias', 'ayudas', 'ayudarme', 'puedes hacer', 'que haces', 'como funcionas', 'para que sirves', 'quien eres')) {
-                return pick([
-                    "Soy bot-n/a, del proyecto n/a. Puedo escucharte cuando estás desbordado, ayudarte a dividir una entrega enorme en pasos pequeños en el 'Desglose Anti-Caos', y guiarte en una pausa de respiración en el 'Escudo Anti-Burnout'. ¿Por dónde quieres empezar?",
-                    "Te puedo acompañar de tres formas: escucharte sin juzgar, ordenar tus tareas en micro-pasos y guiarte en un ejercicio de respiración para bajar el estrés. ¿Qué necesitas ahora mismo?",
-                    "Piensa en mí como alguien que te escucha y te ayuda a ordenar el caos. Cuéntame qué te está agobiando y vemos juntos cuál es el primer paso."
-                ]);
-            }
-
-            // Entregas, parciales, exámenes, plazos
-            if (has('colapsad', 'entrega', 'parcial', 'examen', 'prueba', 'plazo', 'deadline', 'fecha limite', 'tarea', 'trabajo final', 'tesis')) {
-                return pick([
-                    "Respiremos hondo juntos. Entiendo la presión. No tienes que resolver todo en este minuto. Te sugiero ir a 'Desglose Anti-Caos' para dividir eso en pasos de 20 minutos.",
-                    "Cuando todo llega junto es normal sentirse sobrepasado. Elijamos solo lo que vence primero y empecemos por un paso pequeño. ¿Cuál entrega es la más urgente?",
-                    "Eso suena muy cargado. Una idea: anota todo lo pendiente, ordénalo por fecha y haz hoy solo la primera tarea. Si quieres, en 'Desglose Anti-Caos' te la parto en micro-pasos."
-                ]);
-            }
-
-            // Ansiedad, estrés, concentración
-            if (has('ansied', 'ansios', 'estres', 'nervios', 'angusti', 'panico', 'concentr', 'agobi', 'abrum')) {
-                return pick([
-                    "Valido lo que sientes. Tu cerebro está sobrecargado de estímulos. Hagamos una pausa de un minuto en 'Escudo Anti-Burnout' para regular la respiración.",
-                    "La ansiedad se siente enorme cuando todo parece urgente. Probemos algo: inhala 4 segundos, sostén 7 y exhala 8. Tienes ese ejercicio guiado en 'Escudo Anti-Burnout'.",
-                    "Gracias por contarme. Estar tan tenso hace difícil concentrarse, y eso no significa que algo esté mal contigo. ¿Qué te preocupa más en este momento?"
-                ]);
-            }
-
-            // Cansancio, agotamiento, sueño
-            if (has('cansad', 'agotad', 'burnout', 'sin energia', 'sin fuerzas', 'no doy mas', 'dormir', 'sueno', 'insomnio', 'trasnoch')) {
-                return pick([
-                    "Suena a que estás agotado, y eso es una señal real de tu cuerpo, no pereza. Hoy quizás lo mejor sea una tarea pequeña y descansar de verdad.",
-                    "El cansancio acumulado afecta todo: ánimo, memoria, motivación. Si puedes, haz una pausa de 10 minutos lejos de pantallas y toma agua. Después vemos qué es lo mínimo indispensable de hoy.",
-                    "Dormir poco y estudiar mucho no suma. Cuidarte también es parte de rendir. ¿Cuánto has descansado estos días?"
-                ]);
-            }
-
-            // Tristeza, soledad, desánimo
-            if (has('triste', 'solo ', 'sola ', 'soledad', 'desanim', 'deprim', 'llorar', 'no tengo ganas', 'sin ganas', 'desmotiv', 'vacio')) {
-                return pick([
-                    "Lamento que estés pasando por esto. No tienes que cargarlo solo. Si quieres, cuéntame más, y si se siente muy pesado, hablar con alguien de confianza o con bienestar universitario puede ayudarte mucho.",
-                    "Gracias por confiármelo. Lo que sientes importa. Si esta tristeza se está alargando, vale la pena hablarlo con un profesional o con alguien cercano. Mientras tanto, aquí te escucho.",
-                    "Te escucho. A veces la carga académica se mezcla con otras cosas y pesa el doble. ¿Quieres contarme qué ha sido lo más difícil últimamente?"
-                ]);
-            }
-
-            // Miedo a fracasar, reprobar, no ser suficiente
-            if (has('reprobar', 'perder la materia', 'fracas', 'no soy capaz', 'no sirvo', 'no soy suficiente', 'soy un desastre', 'me va a ir mal', 'miedo')) {
-                return pick([
-                    "Ese miedo es muy común y habla de lo importante que es esto para ti, pero no define tu valor ni tu capacidad. ¿Qué es lo que más temes que pase?",
-                    "Un mal resultado no te define. Tampoco tienes que estar seguro de todo para avanzar. Dime qué materia o tarea te preocupa y buscamos un primer paso concreto.",
-                    "Entiendo ese temor. Muchas veces el miedo se calma cuando lo convertimos en un plan pequeño. ¿Quieres que dividamos lo que te preocupa?"
-                ]);
-            }
-
-            // Procrastinación / no saber por dónde empezar / organizar
-            if (has('procrastin', 'no se por donde', 'no se como empezar', 'organiz', 'dividir', 'divid', 'proyecto', 'pasos', 'planificar', 'empezar')) {
-                return pick([
-                    "¡Excelente iniciativa! El secreto es descomponer lo gigante en tareas pequeñas. Escribe el título de tu proyecto en el 'Desglose Anti-Caos' y te lo divido en pasos.",
-                    "Empezar es lo más difícil. Prueba la regla de los 5 minutos: trabaja solo 5 minutos en la tarea. Casi siempre, lo difícil es arrancar. Puedes usar el temporizador de foco en 'Desglose Anti-Caos'.",
-                    "Cuando no sabes por dónde empezar, escribe todo lo que hay que hacer sin ordenarlo. Después elegimos juntos el primer paso. ¿Cuál es el proyecto?"
-                ]);
-            }
-
-            // Confusión o mensajes muy cortos ("ah?", "que?", "no entiendo")
-            if (text.length <= 6 || has('no entiendo', 'no te entendi', 'que?', 'como asi', 'a que te refieres')) {
-                return pick([
-                    "Perdón, creo que no me expliqué bien. Cuéntame con tus palabras qué te preocupa o qué necesitas hoy y lo vemos.",
-                    "Si algo no quedó claro, dímelo sin problema. ¿Quieres que te explique cómo puedo ayudarte con tus entregas o con el estrés?",
-                    "Vamos más despacio. ¿Qué es lo que más te está pesando ahora mismo?"
-                ]);
-            }
-
-            // Respuesta general: invita a profundizar en lugar de repetir lo mismo
             return pick([
-                "Te escucho. ¿Puedes contarme un poco más sobre eso? Quiero entender qué es lo que más te pesa.",
-                "Gracias por compartirlo. ¿Cómo te hace sentir eso en el día a día de la universidad?",
-                "Entiendo. Y si tuvieras que elegir una sola cosa que te quitara peso hoy, ¿cuál sería?",
-                "Estoy contigo. ¿Es algo que te preocupa desde hace poco o hace tiempo?",
-                "Suena importante. ¿Quieres que lo ordenemos juntos en pasos pequeños, o prefieres simplemente desahogarte un rato?"
+                "Te escucho perfectamente. ¿Cómo te sientes con tus entregas hoy?",
+                "Entiendo lo pesado que puede ser la universidad. ¿Quieres que organicemos tus tareas?",
+                "Aquí estoy para apoyarte. Cuéntame qué te pasa por la cabeza."
             ]);
         }
 
-        // Deconstruct Task Tool
         function deconstructTask() {
             const taskInput = document.getElementById('task-input');
             const task = taskInput.value.trim();
@@ -1220,23 +1022,22 @@
 
             subtasks.forEach((item, index) => {
                 const el = document.createElement('div');
-                el.className = 'flex items-center justify-between p-3.5 bg-cream border border-sage/70 rounded-xl hover:border-moss/60 transition-all';
+                el.className = 'flex items-center justify-between p-3.5 bg-cream dark:bg-darkbg border border-sage/70 dark:border-darkborder rounded-xl';
                 el.innerHTML = `
                     <div class="flex items-center gap-3">
                         <input type="checkbox" class="w-4 h-4 accent-moss rounded cursor-pointer">
                         <i class="fa-solid ${item.icon} text-moss text-sm"></i>
-                        <span class="text-sm font-medium text-forest">${index + 1}. ${item.title}</span>
+                        <span class="text-sm font-medium text-forest dark:text-darktext">${index + 1}. ${item.title}</span>
                     </div>
-                    <span class="text-xs bg-mist text-forest border border-moss/40 px-2.5 py-1 rounded-md font-mono">${item.time}</span>
+                    <span class="text-xs bg-mist dark:bg-darkborder text-forest dark:text-darktext border border-moss/40 px-2.5 py-1 rounded-md font-mono">${item.time}</span>
                 `;
                 container.appendChild(el);
             });
 
             document.getElementById('task-count-badge').innerText = subtasks.length + ' Pasos Sugeridos';
-            speakText(`He dividido "${task}" en 4 micro-pasos ejecutables para ti.`);
+            speakText(`He dividido tu tarea en 4 micro-pasos ejecutables.`);
         }
 
-        // Pomodoro Timer
         function togglePomodoro() {
             const btn = document.getElementById('pomo-btn');
             if (isPomodoroRunning) {
@@ -1253,8 +1054,7 @@
                     } else {
                         clearInterval(pomoInterval);
                         isPomodoroRunning = false;
-                        speakText("¡Excelente trabajo! Has completado un bloque de enfoque. Toma un descanso de 5 minutos.");
-                        alert("¡Tiempo cumplido! Toma una pausa activa.");
+                        speakText("¡Bloque de enfoque completado! Toma un descanso.");
                         resetPomodoro();
                     }
                 }, 1000);
@@ -1272,11 +1072,9 @@
         function updatePomoDisplay() {
             const mins = Math.floor(pomoSeconds / 60);
             const secs = pomoSeconds % 60;
-            document.getElementById('pomo-timer').innerText = 
-                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('pomo-timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
-        // Breathing Exercise 4-7-8
         function toggleBreathingCycle() {
             const visualizer = document.getElementById('breath-visualizer');
             const statusText = document.getElementById('breath-status-text');
@@ -1293,12 +1091,10 @@
 
             isBreathingActive = true;
             btn.innerHTML = '<i class="fa-solid fa-stop mr-2"></i> Detener';
-
-            let phase = 0; // 0: Inhale (4s), 1: Hold (7s), 2: Exhale (8s)
+            let phase = 0;
 
             function runCycle() {
                 if (!isBreathingActive) return;
-
                 if (phase === 0) {
                     statusText.innerText = 'Inhala (4s)';
                     visualizer.className = 'breath-circle breath-expand';
@@ -1311,21 +1107,18 @@
                 } else {
                     statusText.innerText = 'Exhala (8s)';
                     visualizer.className = 'breath-circle breath-shrink';
-                    speakText("Exhala lentamente todo el aire");
+                    speakText("Exhala lentamente");
                     setTimeout(() => { phase = 0; runCycle(); }, 8000);
                 }
             }
-
             runCycle();
         }
 
-        // Chart Initialization
         let chartsInitialized = false;
         function initCharts() {
             if (chartsInitialized) return;
             chartsInitialized = true;
 
-            // Chart 1: Stress Level
             const ctx1 = document.getElementById('stressChart').getContext('2d');
             new Chart(ctx1, {
                 type: 'line',
@@ -1345,13 +1138,12 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { grid: { color: 'rgba(52, 64, 46, 0.12)' }, ticks: { color: '#4B5A43' } },
-                        x: { grid: { color: 'rgba(52, 64, 46, 0.12)' }, ticks: { color: '#4B5A43' } }
+                        y: { grid: { color: 'rgba(100, 100, 100, 0.12)' }, ticks: { color: '#889988' } },
+                        x: { grid: { color: 'rgba(100, 100, 100, 0.12)' }, ticks: { color: '#889988' } }
                     }
                 }
             });
 
-            // Chart 2: Tasks Deconstructed
             const ctx2 = document.getElementById('tasksChart').getContext('2d');
             new Chart(ctx2, {
                 type: 'bar',
@@ -1370,27 +1162,24 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { grid: { color: 'rgba(52, 64, 46, 0.12)' }, ticks: { color: '#4B5A43' } },
-                        x: { grid: { color: 'rgba(52, 64, 46, 0.12)' }, ticks: { color: '#4B5A43' } }
+                        y: { grid: { color: 'rgba(100, 100, 100, 0.12)' }, ticks: { color: '#889988' } },
+                        x: { grid: { color: 'rgba(100, 100, 100, 0.12)' }, ticks: { color: '#889988' } }
                     }
                 }
             });
         }
 
-        // Cambio de voz (femenina / masculina) con una frase de prueba
         document.getElementById('voice-select').addEventListener('change', (e) => {
             selectedVoiceGender = e.target.value === 'male' ? 'male' : 'female';
             speakText('Hola, así sueno ahora.');
         });
 
-        // Cerrar el modal de ayuda con Escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeHelpModal();
         });
 
-        // Reanudar conversación guardada (si existe)
         const startPersistence = () => {
-            persistenceReady = initChatPersistence().catch(err => console.warn('Persistencia del chat:', err.message));
+            persistenceReady = initChatPersistence().catch(() => {});
         };
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', startPersistence);
