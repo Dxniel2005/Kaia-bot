@@ -178,6 +178,14 @@ const server = http.createServer(async (req, res) => {
             saveConversation(user.id, payload.messages || []);
             return sendJson(res, 200, { ok: true });
         }
+        if (req.method === 'POST' && url === '/api/history/clear') {
+            req.resume();
+            const id = readCookie(req, COOKIE_NAME);
+            if (id && ID_RE.test(id) && knownUsers.has(id)) {
+                try { fs.unlinkSync(convPath(id)); } catch (e) { }
+            }
+            return sendJson(res, 200, { ok: true });
+        }
         res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
         res.end('No encontrado');
     } catch (err) {

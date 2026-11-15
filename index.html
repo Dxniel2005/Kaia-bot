@@ -619,19 +619,20 @@
         function toggleDarkMode() {
             const htmlEl = document.documentElement;
             const iconEl = document.getElementById('dark-mode-icon');
-            if (htmlEl.classList.contains('dark')) {
+            const goingLight = htmlEl.classList.contains('dark');
+            if (goingLight) {
                 htmlEl.classList.remove('dark');
-                localStorage.setItem('kaia_theme', 'light');
                 iconEl.className = 'fa-solid fa-moon text-xs';
             } else {
                 htmlEl.classList.add('dark');
-                localStorage.setItem('kaia_theme', 'dark');
                 iconEl.className = 'fa-solid fa-sun text-xs text-amber-400';
             }
+            try { localStorage.setItem('kaia_theme', goingLight ? 'light' : 'dark'); } catch (err) { /* sin almacenamiento */ }
         }
 
         (function() {
-            const savedTheme = localStorage.getItem('kaia_theme');
+            let savedTheme = null;
+            try { savedTheme = localStorage.getItem('kaia_theme'); } catch (err) { /* sin almacenamiento */ }
             const iconEl = document.getElementById('dark-mode-icon');
             if (savedTheme === 'light') {
                 document.documentElement.classList.remove('dark');
@@ -1091,24 +1092,6 @@
         container.innerHTML = '<p class="text-sm text-center text-rose-600 dark:text-rose-400">Ocurrió un error al conectar con Kaia.</p>';
     }
 }
-
-            subtasks.forEach((item, index) => {
-                const el = document.createElement('div');
-                el.className = 'flex items-center justify-between p-3.5 bg-cream dark:bg-darkbg border border-sage/70 dark:border-darkborder rounded-xl';
-                el.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" class="w-4 h-4 accent-moss rounded cursor-pointer">
-                        <i class="fa-solid ${item.icon} text-moss text-sm"></i>
-                        <span class="text-sm font-medium text-forest dark:text-darktext">${index + 1}. ${item.title}</span>
-                    </div>
-                    <span class="text-xs bg-mist dark:bg-darkborder text-forest dark:text-darktext border border-moss/40 px-2.5 py-1 rounded-md font-mono">${item.time}</span>
-                `;
-                container.appendChild(el);
-            });
-
-            document.getElementById('task-count-badge').innerText = subtasks.length + ' Pasos Sugeridos';
-            speakText(`He dividido tu tarea en 4 micro-pasos ejecutables, a pasos de tortuga.`);
-        }
 
         function togglePomodoro() {
             const btn = document.getElementById('pomo-btn');
