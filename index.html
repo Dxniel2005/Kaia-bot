@@ -830,6 +830,7 @@
 
         let chatHistory = [];
         let isWaitingReply = false;
+        let aiNoticeShown = false; // aviso de "sin IA" (una vez por caída)
         let initialGreetingHTML = '';
         let pendingResumeHistory = null;
         let resumeOptionsEl = null;
@@ -839,7 +840,8 @@
 
         function cleanMessages(list) {
             if (!Array.isArray(list)) return [];
-            return list.filter(m => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string' && m.content.trim() !== '');
+            return list.filter(m => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string' && m.content.trim() !== ''
+                && !(m.role === 'assistant' && m.content.trim() === 'No pude responder.')); // restos de fallos antiguos
         }
 
         function setAutosaveStatus(ok) {
@@ -959,10 +961,19 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ messages: chatHistory.slice(-20) })
                 });
-                if (!res.ok) throw new Error();
+                if (!res.ok) {
+                    let msg = '';
+                    try { const e = await res.json(); if (e && e.error) msg = e.error; } catch (err) { /* sin detalle */ }
+                    throw new Error(msg);
+                }
                 const data = await res.json();
+                if (typeof data.reply !== 'string' || !data.reply.trim()) throw new Error('respuesta vacía');
                 reply = data.reply;
+                aiNoticeShown = false; // la IA volvió a responder
             } catch (err) {
+                // Sin IA: se usa la respuesta básica y se avisa una vez, con el motivo si el servidor lo dio
+                console.warn('Chat sin IA:', err.message);
+                showAiOfflineNotice(err && err.name === 'TypeError' ? 'sin conexión con el servidor' : err.message);
                 reply = generateEmpatheticResponse(userMsg);
             }
 
@@ -980,6 +991,19 @@
 
             if (synth) speakText(reply);
             else updateOrbState('calm', 'Kaia está lista', 'Lista.');
+        }
+
+        // Aviso discreto (solo visual, no se guarda) cuando el chat responde sin la IA
+        function showAiOfflineNotice(reason) {
+            if (aiNoticeShown) return;
+            aiNoticeShown = true;
+            const container = document.getElementById('chat-messages');
+            const note = document.createElement('div');
+            note.className = 'text-center text-[11px] text-forest-soft dark:text-darkmuted px-4';
+            note.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i>'
+                + escapeHtml('No pude conectarme con la IA ahora mismo' + (reason ? ' (' + reason + ')' : '') + '. Te respondo con mensajes básicos mientras tanto.');
+            container.appendChild(note);
+            container.scrollTop = container.scrollHeight;
         }
 
         function escapeHtml(str) {

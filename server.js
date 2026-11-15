@@ -100,32 +100,117 @@ function sendJson(res, status, obj) {
     res.end(JSON.stringify(obj));
 }
 
+// Convierte la respuesta del modelo en una lista de pasos válida.
+// Acepta: arreglo JSON, objeto { steps: [...] }, o JSON rodeado de ```json ... ``` / texto extra.
+function extractSteps(text) {
+    const t = String(text || '').replace(/```json/gi, '').replace(/```/g, '').trim();
+    const tryParse = (str) => { try { return JSON.parse(str); } catch (e) { return null; } };
+
+    let data = tryParse(t);
+    if (!data) {
+        const a = t.indexOf('['), b = t.lastIndexOf(']');
+        if (a !== -1 && b > a) data = tryParse(t.slice(a, b + 1));
+    }
+    if (data && !Array.isArray(data) && Array.isArray(data.steps)) data = data.steps;
+    if (!Array.isArray(data)) return [];
+
+    return data
+        .filter(st => st && typeof st.title === 'string' && st.title.trim())
+        .slice(0, 6)
+        .map(st => ({
+            title: st.title.trim().slice(0, 200),
+            time: typeof st.time === 'string' && st.time.trim() ? st.time.trim().slice(0, 30) : '15 min'
+        }));
+}
+
+// Traduce un error HTTP de Gemini a un mensaje claro (y el código que se devuelve al navegador)
+function describeGeminiError(status, detail) {
+    if (status === 429) return { status: 429, error: 'Se alcanzó el límite del servicio gratuito. Espera un minuto e inténtalo de nuevo.' };
+    if (status === 400 && /API key/i.test(detail)) return { status: 502, error: 'La clave de Gemini no es válida o venció. Revisa GEMINI_API_KEY.' };
+    if (status === 401 || status === 403) return { status: 502, error: 'La clave de Gemini no tiene permiso. Revisa GEMINI_API_KEY y que la API esté habilitada.' };
+    if (status === 404) return { status: 502, error: `El modelo "${MODEL}" no existe o no está disponible para tu clave. Revisa GEMINI_MODEL.` };
+    return { status: 502, error: 'El modelo no respondió. Inténtalo de nuevo.' };
+}
+
+// Config de generación común. Gemini 2.5 Flash "piensa" antes de responder y esos tokens cuentan dentro
+// de maxOutputTokens: sin desactivarlo, podía quedarse sin espacio y devolver una respuesta vacía.
+const noThinking = () => (/2\.5-flash/.test(MODEL) ? { thinkingConfig: { thinkingBudget: 0 } } : {});
+
+// Llama a Gemini y devuelve { value } o { status, error }.
+// accept(texto) devuelve el resultado válido o null; si falla algo pasajero (5xx o respuesta vacía) reintenta una vez.
+async function askGemini(body, label, accept) {
+    let last = { status: 502, error: 'El modelo no respondió. Inténtalo de nuevo.' };
+
+    for (let attempt = 1; attempt <= 2; attempt++) {
+        let upstream;
+        try {
+            upstream = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-goog-api-key': API_KEY },
+                body: JSON.stringify(body)
+            });
+        } catch (err) {
+            console.error(`${label} (intento ${attempt}): no pude contactar a Gemini:`, err.message);
+            last = { status: 502, error: 'No pude contactar al modelo. Revisa tu conexión.' };
+            continue;
+        }
+
+        if (!upstream.ok) {
+            const detail = (await upstream.text()).slice(0, 500);
+            console.error(`${label} (intento ${attempt}): Gemini respondió ${upstream.status}:`, detail);
+            last = describeGeminiError(upstream.status, detail);
+            if (upstream.status >= 500 && attempt === 1) { await new Promise(r => setTimeout(r, 800)); continue; }
+            return last;
+        }
+
+        const data = await upstream.json();
+        const cand = data.candidates && data.candidates[0];
+        const text = ((cand && cand.content && cand.content.parts) || []).map(p => p.text || '').join('');
+        const value = accept(text);
+        if (value) return { value };
+
+        console.warn(`${label} (intento ${attempt}) sin resultado válido. finishReason: ${cand && cand.finishReason} | bloqueo: ${(data.promptFeedback && data.promptFeedback.blockReason) || 'ninguno'} | texto recibido: ${JSON.stringify(text.slice(0, 200))}`);
+        last = { status: 502, error: 'El modelo no devolvió una respuesta válida. Inténtalo de nuevo.' };
+    }
+    return last;
+}
+
+// Limpia el historial que llega del navegador: roles alternados, empieza y termina con "user"
+// (Gemini rechaza la petición si hay dos mensajes seguidos del mismo rol)
+function sanitizeChatMessages(raw) {
+    if (!Array.isArray(raw)) return [];
+    const out = [];
+    for (const m of raw.slice(-20)) {
+        if (!m || (m.role !== 'user' && m.role !== 'assistant') || typeof m.content !== 'string') continue;
+        const content = m.content.trim().slice(0, 2000);
+        if (!content || (m.role === 'assistant' && content === 'No pude responder.')) continue; // restos de fallos antiguos
+        const role = m.role === 'assistant' ? 'model' : 'user';
+        const last = out[out.length - 1];
+        if (last && last.role === role) last.parts[0].text += '\n' + content;
+        else out.push({ role, parts: [{ text: content }] });
+    }
+    while (out.length && out[0].role !== 'user') out.shift();
+    return out;
+}
+
 async function handleChat(req, res) {
-    if (!API_KEY) return sendJson(res, 503, { error: 'Falta GEMINI_API_KEY.' });
+    if (!API_KEY) return sendJson(res, 503, { error: 'Falta GEMINI_API_KEY en el servidor.' });
     let payload;
     try { payload = JSON.parse(await readBody(req)); } catch (e) { return sendJson(res, 400, { error: 'Solicitud inválida.' }); }
 
-    const contents = (payload.messages || []).map(m => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }]
-    }));
-
-    try {
-        const upstream = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': API_KEY },
-            body: JSON.stringify({
-                system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-                contents: contents,
-                generationConfig: { maxOutputTokens: 800, temperature: 0.7 }
-            })
-        });
-        const data = await upstream.json();
-        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No pude responder.';
-        sendJson(res, 200, { reply });
-    } catch (err) {
-        sendJson(res, 502, { error: 'Error al contactar al modelo.' });
+    const contents = sanitizeChatMessages(payload.messages);
+    if (!contents.length || contents[contents.length - 1].role !== 'user') {
+        return sendJson(res, 400, { error: 'El último mensaje debe ser del usuario.' });
     }
+
+    const result = await askGemini({
+        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents,
+        generationConfig: { maxOutputTokens: 800, temperature: 0.7, ...noThinking() }
+    }, 'Chat', text => text.trim() || null);
+
+    if (result.value) return sendJson(res, 200, { reply: result.value });
+    sendJson(res, result.status, { error: result.error });
 }
 
 // Convierte la respuesta del modelo en una lista de pasos válida.
@@ -151,56 +236,6 @@ function extractSteps(text) {
         }));
 }
 
-// Llama a Gemini para el desglose. Devuelve { steps } o { status, error }; reintenta una vez si hay un fallo pasajero.
-async function requestSteps(prompt) {
-    let last = { status: 502, error: 'El modelo no respondió. Inténtalo de nuevo.' };
-
-    for (let attempt = 1; attempt <= 2; attempt++) {
-        let upstream;
-        try {
-            upstream = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'x-goog-api-key': API_KEY },
-                body: JSON.stringify({
-                    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-                    generationConfig: {
-                        maxOutputTokens: 1024,
-                        temperature: 0.6,
-                        responseMimeType: 'application/json', // pide JSON directo, sin markdown
-                        // Gemini 2.5 Flash "piensa" antes de responder y esos tokens cuentan: sin esto podía quedarse sin texto
-                        ...(/2\.5-flash/.test(MODEL) ? { thinkingConfig: { thinkingBudget: 0 } } : {})
-                    }
-                })
-            });
-        } catch (err) {
-            console.error(`Desglose (intento ${attempt}): no pude contactar a Gemini:`, err.message);
-            last = { status: 502, error: 'No pude contactar al modelo. Revisa tu conexión.' };
-            continue;
-        }
-
-        if (!upstream.ok) {
-            const detail = (await upstream.text()).slice(0, 500);
-            console.error(`Desglose (intento ${attempt}): Gemini respondió ${upstream.status}:`, detail);
-            if (upstream.status === 429) {
-                return { status: 429, error: 'Se alcanzó el límite del servicio gratuito. Espera un minuto e inténtalo de nuevo.' };
-            }
-            last = { status: 502, error: 'El modelo no respondió. Inténtalo de nuevo.' };
-            if (upstream.status >= 500 && attempt === 1) { await new Promise(r => setTimeout(r, 800)); continue; }
-            return last;
-        }
-
-        const data = await upstream.json();
-        const cand = data.candidates && data.candidates[0];
-        const text = ((cand && cand.content && cand.content.parts) || []).map(p => p.text || '').join('');
-        const steps = extractSteps(text);
-        if (steps.length) return { steps };
-
-        console.warn(`Desglose (intento ${attempt}) sin pasos. finishReason: ${cand && cand.finishReason} | bloqueo: ${(data.promptFeedback && data.promptFeedback.blockReason) || 'ninguno'} | texto recibido: ${JSON.stringify(text.slice(0, 200))}`);
-        last = { status: 502, error: 'El modelo no devolvió pasos válidos. Inténtalo de nuevo.' };
-    }
-    return last;
-}
-
 async function handleDeconstruct(req, res) {
     if (!API_KEY) return sendJson(res, 503, { error: 'Falta GEMINI_API_KEY.' });
     let payload;
@@ -213,8 +248,17 @@ async function handleDeconstruct(req, res) {
     Divídela en 3 a 5 micro-pasos realistas y sencillos.
     Devuelve la respuesta estrictamente como un arreglo JSON plano, sin markdown, donde cada objeto tenga: "title" y "time" (ej. "15 min").`;
 
-    const result = await requestSteps(prompt);
-    if (result.steps) return sendJson(res, 200, { steps: result.steps });
+    const result = await askGemini({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+            maxOutputTokens: 1024,
+            temperature: 0.6,
+            responseMimeType: 'application/json', // pide JSON directo, sin markdown
+            ...noThinking()
+        }
+    }, 'Desglose', text => { const steps = extractSteps(text); return steps.length ? steps : null; });
+
+    if (result.value) return sendJson(res, 200, { steps: result.value });
     sendJson(res, result.status, { error: result.error });
 }
 
