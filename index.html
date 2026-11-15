@@ -77,49 +77,64 @@
             border-radius: 4px;
         }
 
-        /* Avatar Animated Orb */
-        .orb-avatar {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #D7E1C8, #A9C08A, #6F8E5A);
+        /* Avatar de Kaia (tu imagen) */
+        .avatar-stage {
+            --avatar-size: 160px;               /* ← cambia aquí el tamaño de tu imagen */
+            width: var(--avatar-size);
+            height: var(--avatar-size);
             position: relative;
-            box-shadow: 0 0 30px rgba(111, 142, 90, 0.45);
-            transition: all 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-origin: 50% 90%;          /* se mueve "apoyada" desde abajo */
+            filter: drop-shadow(0 6px 14px rgba(111, 142, 90, 0.35));
+            transition: filter 0.4s ease;
+            animation: avatarFloat 4s ease-in-out infinite;   /* reposo: flota suavemente */
+            will-change: transform;
         }
-        .dark .orb-avatar {
-            background: radial-gradient(circle at 30% 30%, #2C3A27, #6F8E5A, #A9C08A);
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            user-select: none;
+            pointer-events: none;
         }
-
-        .orb-avatar.speaking {
-            animation: orbBounce 0.8s infinite alternate ease-in-out, glow 1s infinite alternate;
-            background: radial-gradient(circle at 30% 30%, #F6F0E6, #A9C08A, #6F8E5A);
+        /* Hablando: rebota como si moviera la boca */
+        .avatar-stage.speaking {
+            animation: avatarTalk 0.55s ease-in-out infinite;
+            filter: drop-shadow(0 0 18px rgba(169, 192, 138, 0.8));
         }
-
-        .orb-avatar.listening {
-            animation: orbPulseFast 0.6s infinite alternate ease-in-out;
-            background: radial-gradient(circle at 30% 30%, #A9C08A, #6F8E5A, #34402E);
-            box-shadow: 0 0 40px rgba(111, 142, 90, 0.8);
+        /* Escuchando: se inclina y "late" atento */
+        .avatar-stage.listening {
+            animation: avatarListen 1.2s ease-in-out infinite;
+            filter: drop-shadow(0 0 16px rgba(111, 142, 90, 0.85));
         }
-
-        .orb-avatar.thinking {
-            animation: orbSpin 2s linear infinite;
-            background: radial-gradient(circle at 30% 30%, #6F8E5A, #34402E, #34402E);
-        }
-
-        @keyframes orbBounce {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.08); }
-        }
-
-        @keyframes orbPulseFast {
-            0% { transform: scale(0.98); }
-            100% { transform: scale(1.05); }
+        /* Pensando: balanceo lento */
+        .avatar-stage.thinking {
+            animation: avatarThink 1.6s ease-in-out infinite;
         }
 
-        @keyframes orbSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes avatarFloat {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-5px); }
+        }
+        @keyframes avatarTalk {
+            0%, 100% { transform: translateY(0) scale(1, 1) rotate(0deg); }
+            25%      { transform: translateY(-4px) scale(1.05, 0.97) rotate(-1.5deg); }
+            50%      { transform: translateY(0) scale(0.98, 1.03) rotate(0deg); }
+            75%      { transform: translateY(-3px) scale(1.04, 0.98) rotate(1.5deg); }
+        }
+        @keyframes avatarListen {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50%      { transform: scale(1.06) rotate(3deg); }
+        }
+        @keyframes avatarThink {
+            0%, 100% { transform: rotate(-4deg); }
+            50%      { transform: rotate(4deg); }
+        }
+        /* Si la persona tiene activada la opción de reducir movimiento, el avatar se queda quieto */
+        @media (prefers-reduced-motion: reduce) {
+            .avatar-stage { animation: none !important; }
         }
 
         /* Breathing Circle */
@@ -239,10 +254,26 @@
                     </span>
                     <span class="text-[11px] text-forest-soft dark:text-darkmuted italic mb-4">"como a pasos de tortuga"</span>
 
-                    <!-- Orb Interactive Avatar -->
+                    <!-- =====================================================================
+                         AVATAR DE KAIA
+                         👇 AQUÍ VA TU IMAGEN.
+                         Guárdala como  assets/kaia.png  (carpeta "assets" junto a server.js e index.html)
+                         o cambia el src de abajo por el nombre de tu archivo (png, jpg, webp, gif o svg).
+                         Mejor si el fondo es transparente (PNG/WebP/SVG).
+                         Tamaño: busca "--avatar-size" en el CSS (clase .avatar-stage).
+                         Se mueve sola según el estado: reposo, hablando, escuchando y pensando.
+                         ===================================================================== -->
                     <div class="my-6 relative flex items-center justify-center">
-                        <div id="sura-orb" class="orb-avatar flex items-center justify-center">
-                            <i id="orb-icon" class="fa-solid fa-sparkles text-3xl text-forest/80 dark:text-darktext"></i>
+                        <div id="sura-orb" class="avatar-stage calm">
+                            <img id="avatar-img" src="assets/kaia.png" alt="Kaia" class="avatar-img" draggable="false"
+                                 onerror="this.classList.add('hidden'); document.getElementById('avatar-placeholder').classList.remove('hidden');">
+                            <!-- Se muestra solo mientras todavía no existe tu imagen -->
+                            <div id="avatar-placeholder" class="hidden absolute inset-0">
+                                <div class="w-full h-full rounded-3xl border-2 border-dashed border-sage dark:border-darkborder flex flex-col items-center justify-center text-center p-3 text-forest-soft dark:text-darkmuted">
+                                    <i class="fa-regular fa-image text-2xl mb-1"></i>
+                                    <span class="text-[11px] leading-tight">Pon tu imagen en<br><b>assets/kaia.png</b></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -286,24 +317,6 @@
                             <option value="male">Masculina (Cálida)</option>
                         </select>
 
-                        <span class="text-xs text-forest-soft dark:text-darkmuted block mb-2">Avatar</span>
-                        <div id="avatar-options" class="flex flex-wrap gap-2">
-                            <button type="button" data-avatar="fa-sparkles" onclick="changeAvatar('fa-sparkles')" title="Destellos" aria-label="Avatar destellos" class="w-10 h-10 rounded-xl border border-moss bg-moss/15 text-forest dark:text-darktext hover:border-moss transition-all">
-                                <i class="fa-solid fa-sparkles"></i>
-                            </button>
-                            <button type="button" data-avatar="fa-robot" onclick="changeAvatar('fa-robot')" title="Robot" aria-label="Avatar robot" class="w-10 h-10 rounded-xl border border-sage dark:border-darkborder bg-cream dark:bg-darkbg text-forest-soft dark:text-darkmuted hover:border-moss hover:text-forest dark:hover:text-darktext transition-all">
-                                <i class="fa-solid fa-robot"></i>
-                            </button>
-                            <button type="button" data-avatar="fa-brain" onclick="changeAvatar('fa-brain')" title="Cerebro" aria-label="Avatar cerebro" class="w-10 h-10 rounded-xl border border-sage dark:border-darkborder bg-cream dark:bg-darkbg text-forest-soft dark:text-darkmuted hover:border-moss hover:text-forest dark:hover:text-darktext transition-all">
-                                <i class="fa-solid fa-brain"></i>
-                            </button>
-                            <button type="button" data-avatar="fa-ghost" onclick="changeAvatar('fa-ghost')" title="Fantasma" aria-label="Avatar fantasma" class="w-10 h-10 rounded-xl border border-sage dark:border-darkborder bg-cream dark:bg-darkbg text-forest-soft dark:text-darkmuted hover:border-moss hover:text-forest dark:hover:text-darktext transition-all">
-                                <i class="fa-solid fa-ghost"></i>
-                            </button>
-                            <button type="button" data-avatar="fa-heart" onclick="changeAvatar('fa-heart')" title="Corazón" aria-label="Avatar corazón" class="w-10 h-10 rounded-xl border border-sage dark:border-darkborder bg-cream dark:bg-darkbg text-forest-soft dark:text-darkmuted hover:border-moss hover:text-forest dark:hover:text-darktext transition-all">
-                                <i class="fa-solid fa-heart"></i>
-                            </button>
-                        </div>
                     </div>
 </div>
 
@@ -562,7 +575,6 @@
         let breathingInterval = null;
         let isBreathingActive = false;
         let selectedVoiceGender = 'female'; 
-        let currentAvatarIcon = 'fa-sparkles'; 
 
         // Web Speech API Initialization
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -704,22 +716,6 @@
             synth.speak(utterance);
         }
 
-        function changeAvatar(iconName) {
-            if (!/^fa-[a-z0-9-]+$/.test(iconName)) return;
-            currentAvatarIcon = iconName;
-            document.querySelectorAll('[data-avatar]').forEach(btn => {
-                const on = btn.dataset.avatar === iconName;
-                btn.classList.toggle('border-moss', on);
-                btn.classList.toggle('bg-moss/15', on);
-                btn.classList.toggle('border-sage', !on);
-            });
-            const orb = document.getElementById('sura-orb');
-            const busy = ['speaking', 'listening', 'thinking'].some(c => orb.classList.contains(c));
-            if (!busy) {
-                document.getElementById('orb-icon').className = 'fa-solid ' + iconName + ' text-3xl text-forest/80 dark:text-darktext';
-            }
-        }
-
         function showHelpModal() {
             document.getElementById('help-modal').classList.remove('hidden');
         }
@@ -736,25 +732,16 @@
             updateOrbState('calm', 'Kaia está lista', 'Voz detenida.');
         }
 
+        // Cambia el estado del avatar: 'calm' (reposo) | 'speaking' | 'listening' | 'thinking'
+        // El movimiento de cada estado está en el CSS (.avatar-stage.speaking, etc.)
         function updateOrbState(state, title, desc) {
-            const orb = document.getElementById('sura-orb');
-            const icon = document.getElementById('orb-icon');
+            const stage = document.getElementById('sura-orb');
             const titleEl = document.getElementById('sura-state-title');
             const descEl = document.getElementById('sura-state-desc');
 
-            orb.className = 'orb-avatar flex items-center justify-center ' + state;
+            stage.className = 'avatar-stage ' + state;
             if (title) titleEl.innerText = title;
             if (desc) descEl.innerText = desc;
-
-            if (state === 'speaking') {
-                icon.className = 'fa-solid fa-volume-high text-3xl text-forest/90 dark:text-darktext animate-pulse';
-            } else if (state === 'listening') {
-                icon.className = 'fa-solid fa-microphone text-3xl text-cream/90 animate-bounce';
-            } else if (state === 'thinking') {
-                icon.className = 'fa-solid fa-rotate text-3xl text-cream/90 animate-spin';
-            } else {
-                icon.className = 'fa-solid ' + currentAvatarIcon + ' text-3xl text-forest/80 dark:text-darktext';
-            }
         }
 
         function appendChatMessageSafeClear() {

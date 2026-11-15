@@ -10,7 +10,7 @@ if (typeof fetch !== 'function') {
 
 const PORT = Number(process.env.PORT) || 3000;
 const API_KEY = process.env.GEMINI_API_KEY;
-const MODEL = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
+const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 const HTML_FILE = path.join(__dirname, 'index.html');
 
@@ -262,6 +262,37 @@ async function handleDeconstruct(req, res) {
     sendJson(res, result.status, { error: result.error });
 }
 
+// Imágenes del avatar (y otros recursos) desde la carpeta "assets", junto a este archivo.
+// Solo archivos sueltos con extensión de imagen: no se puede salir de la carpeta ni leer otros archivos.
+const ASSETS_DIR = path.join(__dirname, 'assets');
+const ASSET_TYPES = {
+    '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif',
+    '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ico': 'image/x-icon'
+};
+
+function serveAsset(url, res) {
+    let name = '';
+    try { name = decodeURIComponent(url.slice('/assets/'.length)); } catch (e) { /* nombre inválido */ }
+    const type = ASSET_TYPES[path.extname(name).toLowerCase()];
+    const file = path.join(ASSETS_DIR, name);
+    const safe = /^[A-Za-z0-9][A-Za-z0-9._ -]*$/.test(name) && !name.includes('..') && path.dirname(file) === ASSETS_DIR;
+    if (!safe || !type) {
+        res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+        return res.end('No encontrado');
+    }
+    fs.readFile(file, (err, data) => {
+        if (err) {
+            res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+            return res.end('No encontrado');
+        }
+        const headers = { 'Content-Type': type, 'Cache-Control': 'public, max-age=60', 'X-Content-Type-Options': 'nosniff' };
+        // Un SVG abierto directamente no puede ejecutar scripts
+        if (type === 'image/svg+xml') headers['Content-Security-Policy'] = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
+        res.writeHead(200, headers);
+        res.end(data);
+    });
+}
+
 const server = http.createServer(async (req, res) => {
     try {
         const url = (req.url || '/').split('?')[0];
@@ -271,6 +302,7 @@ const server = http.createServer(async (req, res) => {
         }
         if (req.method === 'POST' && url === '/api/chat') return await handleChat(req, res);
         if (req.method === 'POST' && url === '/api/deconstruct') return await handleDeconstruct(req, res);
+        if (req.method === 'GET' && url.startsWith('/assets/')) return serveAsset(url, res);
         if (req.method === 'GET' && url === '/api/session') {
             const user = ensureUser(req, res);
             return sendJson(res, 200, { messages: readConversation(user.id).messages });
