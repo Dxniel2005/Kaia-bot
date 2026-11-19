@@ -804,7 +804,7 @@
         let isPomodoroRunning = false;
         let pomoSeconds = 25 * 60;
         let pomoInterval = null;
-        let breathingInterval = null;
+        let breathingTimeout = null;
         let isBreathingActive = false;
         let selectedVoiceGender = 'female'; 
 
@@ -1407,45 +1407,56 @@
         }
 
         // ejercicio de respiración
-        function toggleBreathingCycle() {
-            const visualizer = document.getElementById('breath-visualizer');
-            const statusText = document.getElementById('breath-status-text');
-            const btn = document.getElementById('start-breath-btn');
+function toggleBreathingCycle() {
+    const visualizer = document.getElementById('breath-visualizer');
+    const statusText = document.getElementById('breath-status-text');
+    const btn = document.getElementById('start-breath-btn');
 
-            if (isBreathingActive) {
-                clearInterval(breathingInterval);
-                isBreathingActive = false;
-                visualizer.className = 'breath-circle';
-                statusText.innerText = 'Listo';
-                btn.innerHTML = '<i class="fa-solid fa-wind mr-2"></i> Iniciar Ejercicio';
-                return;
-            }
+    if (isBreathingActive) {
+        clearTimeout(breathingTimeout);
+        breathingTimeout = null;
+        isBreathingActive = false;
+        visualizer.className = 'breath-circle';
+        statusText.innerText = 'Listo';
+        btn.innerHTML = '<i class="fa-solid fa-wind mr-2"></i> Iniciar Ejercicio';
+        return;
+    }
 
-            isBreathingActive = true;
-            btn.innerHTML = '<i class="fa-solid fa-stop mr-2"></i> Detener';
-            let phase = 0;
+    isBreathingActive = true;
+    btn.innerHTML = '<i class="fa-solid fa-stop mr-2"></i> Detener';
+    let phase = 0;
 
-            function runCycle() {
-                if (!isBreathingActive) return;
-                if (phase === 0) {
-                    statusText.innerText = 'Inhala (4s)';
-                    visualizer.className = 'breath-circle breath-expand';
-                    speakText("Inhala suavemente");
-                    setTimeout(() => { phase = 1; runCycle(); }, 4000);
-                } else if (phase === 1) {
-                    statusText.innerText = 'Mantenlo (7s)';
-                    visualizer.className = 'breath-circle breath-hold';
-                    setTimeout(() => { phase = 2; runCycle(); }, 7000);
-                } else {
-                    statusText.innerText = 'Exhala (8s)';
-                    visualizer.className = 'breath-circle breath-shrink';
-                    speakText("Exhala lentamente");
-                    setTimeout(() => { phase = 0; runCycle(); }, 8000);
-                }
-            }
+    function scheduleNext(delayMs, nextPhase) {
+        clearTimeout(breathingTimeout);
+        breathingTimeout = setTimeout(() => {
+            if (!isBreathingActive) return;
+            phase = nextPhase;
             runCycle();
-        }
+        }, delayMs);
+    }
 
+    function runCycle() {
+        if (!isBreathingActive) return;
+
+        if (phase === 0) {
+            statusText.innerText = 'Inhala (4s)';
+            visualizer.className = 'breath-circle breath-expand';
+            speakText("Inhala suavemente");
+            scheduleNext(4000, 1);
+        } else if (phase === 1) {
+            statusText.innerText = 'Mantenlo (7s)';
+            visualizer.className = 'breath-circle breath-hold';
+            scheduleNext(7000, 2);
+        } else {
+            statusText.innerText = 'Exhala (8s)';
+            visualizer.className = 'breath-circle breath-shrink';
+            speakText("Exhala lentamente");
+            scheduleNext(8000, 0);
+        }
+    }
+
+    runCycle();
+}
         // gráficos de métricas
         let chartsInitialized = false;
         function initCharts() {
