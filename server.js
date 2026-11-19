@@ -1,3 +1,4 @@
+// dependencias
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -8,12 +9,14 @@ if (typeof fetch !== 'function') {
     process.exit(1);
 }
 
+// configuración
 const PORT = Number(process.env.PORT) || 3000;
 const API_KEY = process.env.GEMINI_API_KEY;
 const MODEL = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 const HTML_FILE = path.join(__dirname, 'index.html');
 
+// personalidad de kaia
 const SYSTEM_PROMPT = `Eres Kaia, una compañera universitaria cercana y empática. Tu trato es cálido, directo, tranquilo y genuino.
 
 Estilo y tono (SÚPER IMPORTANTE):
@@ -35,6 +38,7 @@ Límites y alertas:
 - IMPORTANTE: Cuando detectes una situación de crisis, invítala amablemente a usar el botón de "Ayuda" que está en la parte superior de la pantalla para conectar con apoyo real.
 - No inventes números de teléfono, solo refiérete al botón o a buscar apoyo en su entorno cercano.`;
 
+// almacenamiento de usuarios y conversaciones
 const DATA_DIR = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path.join(__dirname, 'data');
 const CONV_DIR = path.join(DATA_DIR, 'conversations');
 const USERS_LOG = path.join(DATA_DIR, 'users.jsonl');
@@ -54,6 +58,7 @@ try {
     }
 } catch (e) { }
 
+// cookie de usuario
 function readCookie(req, name) {
     for (const part of (req.headers.cookie || '').split(';')) {
         const i = part.indexOf('=');
@@ -78,6 +83,7 @@ function ensureUser(req, res) {
     return { id: newId, isNew: true };
 }
 
+// guardado de conversaciones
 const convPath = (id) => path.join(CONV_DIR, id + '.json');
 
 function readConversation(id) {
@@ -100,6 +106,7 @@ function saveConversation(id, messages) {
     fs.writeFileSync(convPath(id), json, { mode: 0o600 });
 }
 
+// utilidades http
 function readBody(req, limit = 100_000) {
     return new Promise((resolve, reject) => {
         let size = 0;
@@ -119,8 +126,7 @@ function sendJson(res, status, obj) {
     res.end(JSON.stringify(obj));
 }
 
-// Convierte la respuesta del modelo en una lista de pasos válida.
-// Acepta: arreglo JSON, objeto { steps: [...] }, o JSON rodeado de ```json ... ``` / texto extra.
+// extracción de pasos del desglose
 function extractSteps(text) {
     const t = String(text || '').replace(/```json/gi, '').replace(/```/g, '').trim();
     const tryParse = (str) => { try { return JSON.parse(str); } catch (e) { return null; } };
@@ -142,7 +148,7 @@ function extractSteps(text) {
         }));
 }
 
-// Traduce un error HTTP de Gemini a un mensaje claro (y el código que se devuelve al navegador)
+// errores de gemini
 function describeGeminiError(status, detail) {
     if (status === 429) return { status: 429, error: 'Se alcanzó el límite del servicio gratuito. Espera un minuto e inténtalo de nuevo.' };
     if (status === 400 && /API key/i.test(detail)) return { status: 502, error: 'La clave de Gemini no es válida o venció. Revisa GEMINI_API_KEY.' };
@@ -151,12 +157,10 @@ function describeGeminiError(status, detail) {
     return { status: 502, error: 'El modelo no respondió. Inténtalo de nuevo.' };
 }
 
-// Config de generación común. Gemini 2.5 Flash "piensa" antes de responder y esos tokens cuentan dentro
-// de maxOutputTokens: sin desactivarlo, podía quedarse sin espacio y devolver una respuesta vacía.
+// configuración de generación
 const noThinking = () => (/2\.5-flash/.test(MODEL) ? { thinkingConfig: { thinkingBudget: 0 } } : {});
 
-// Llama a Gemini y devuelve { value } o { status, error }.
-// accept(texto) devuelve el resultado válido o null; si falla algo pasajero (5xx o respuesta vacía) reintenta una vez.
+// conexión con gemini (un reintento si falla)
 async function askGemini(body, label, accept) {
     let last = { status: 502, error: 'El modelo no respondió. Inténtalo de nuevo.' };
 
@@ -194,15 +198,14 @@ async function askGemini(body, label, accept) {
     return last;
 }
 
-// Limpia el historial que llega del navegador: roles alternados, empieza y termina con "user"
-// (Gemini rechaza la petición si hay dos mensajes seguidos del mismo rol)
+// limpieza del historial del chat
 function sanitizeChatMessages(raw) {
     if (!Array.isArray(raw)) return [];
     const out = [];
     for (const m of raw.slice(-20)) {
         if (!m || (m.role !== 'user' && m.role !== 'assistant') || typeof m.content !== 'string') continue;
         const content = m.content.trim().slice(0, 2000);
-        if (!content || (m.role === 'assistant' && content === 'No pude responder.')) continue; // restos de fallos antiguos
+        if (!content || (m.role === 'assistant' && content === 'No pude responder.')) continue;
         const role = m.role === 'assistant' ? 'model' : 'user';
         const last = out[out.length - 1];
         if (last && last.role === role) last.parts[0].text += '\n' + content;
@@ -212,6 +215,7 @@ function sanitizeChatMessages(raw) {
     return out;
 }
 
+// chat
 async function handleChat(req, res) {
     if (!API_KEY) return sendJson(res, 503, { error: 'Falta GEMINI_API_KEY en el servidor.' });
     let payload;
@@ -232,8 +236,7 @@ async function handleChat(req, res) {
     sendJson(res, result.status, { error: result.error });
 }
 
-// Convierte la respuesta del modelo en una lista de pasos válida.
-// Acepta: arreglo JSON, objeto { steps: [...] }, o JSON rodeado de ```json ... ``` / texto extra.
+// extracción de pasos del desglose
 function extractSteps(text) {
     const t = String(text || '').replace(/```json/gi, '').replace(/```/g, '').trim();
     const tryParse = (str) => { try { return JSON.parse(str); } catch (e) { return null; } };
@@ -255,6 +258,7 @@ function extractSteps(text) {
         }));
 }
 
+// desglose anti-caos
 async function handleDeconstruct(req, res) {
     if (!API_KEY) return sendJson(res, 503, { error: 'Falta GEMINI_API_KEY.' });
     let payload;
@@ -272,7 +276,7 @@ async function handleDeconstruct(req, res) {
         generationConfig: {
             maxOutputTokens: 1024,
             temperature: 0.6,
-            responseMimeType: 'application/json', // pide JSON directo, sin markdown
+            responseMimeType: 'application/json',
             ...noThinking()
         }
     }, 'Desglose', text => { const steps = extractSteps(text); return steps.length ? steps : null; });
@@ -281,8 +285,7 @@ async function handleDeconstruct(req, res) {
     sendJson(res, result.status, { error: result.error });
 }
 
-// Imágenes del avatar (y otros recursos) desde la carpeta "assets", junto a este archivo.
-// Solo archivos sueltos con extensión de imagen: no se puede salir de la carpeta ni leer otros archivos.
+// archivos estáticos de /assets
 const ASSETS_DIR = path.join(__dirname, 'assets');
 const ASSET_TYPES = {
     '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif',
@@ -291,7 +294,7 @@ const ASSET_TYPES = {
 
 function serveAsset(url, res) {
     let name = '';
-    try { name = decodeURIComponent(url.slice('/assets/'.length)); } catch (e) { /* nombre inválido */ }
+    try { name = decodeURIComponent(url.slice('/assets/'.length)); } catch (e) { }
     const type = ASSET_TYPES[path.extname(name).toLowerCase()];
     const file = path.join(ASSETS_DIR, name);
     const safe = /^[A-Za-z0-9][A-Za-z0-9._ -]*$/.test(name) && !name.includes('..') && path.dirname(file) === ASSETS_DIR;
@@ -305,13 +308,14 @@ function serveAsset(url, res) {
             return res.end('No encontrado');
         }
         const headers = { 'Content-Type': type, 'Cache-Control': 'public, max-age=60', 'X-Content-Type-Options': 'nosniff' };
-        // Un SVG abierto directamente no puede ejecutar scripts
+        // política de seguridad para svg
         if (type === 'image/svg+xml') headers['Content-Security-Policy'] = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
         res.writeHead(200, headers);
         res.end(data);
     });
 }
 
+// servidor y rutas
 const server = http.createServer(async (req, res) => {
     try {
         const url = (req.url || '/').split('?')[0];

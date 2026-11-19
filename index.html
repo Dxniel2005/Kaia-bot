@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kaia - Informatica</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -12,15 +12,16 @@
             theme: {
                 extend: {
                     colors: {
-                        cream: '#F6F0E6',   // fondo claro
-                        mist:  '#D7E1C8',   // tarjetas claras
-                        sage:  '#A9C08A',   // bordes claros
-                        moss:  '#6F8E5A',   // acentos claros
+                        // paleta modo claro
+                        cream: '#F6F0E6',
+                        mist:  '#D7E1C8',
+                        sage:  '#A9C08A',
+                        moss:  '#6F8E5A',
                         forest: {
                             DEFAULT: '#34402E', 
                             soft: '#4B5A43'     
                         },
-                        // Paleta modo oscuro
+                        // paleta modo oscuro
                         darkbg: '#121810',
                         darkcard: '#1B2418',
                         darkborder: '#2C3A27',
@@ -44,11 +45,11 @@
             }
         }
     </script>
-    <!-- FontAwesome CDN for Icons -->
+    <!-- iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js for Metrics -->
+    <!-- gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Fonts: Inter -->
+    <!-- tipografía -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -62,7 +63,7 @@
             color: #E2EBD8;
         }
 
-        /* Custom Scrollbar */
+        /* scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -77,19 +78,19 @@
             border-radius: 4px;
         }
 
-        /* Avatar de Kaia (tu imagen) */
+        /* avatar de kaia */
         .avatar-stage {
-            --avatar-size: 160px;               /* ← cambia aquí el tamaño de tu imagen */
+            --avatar-size: 160px;
             width: var(--avatar-size);
             height: var(--avatar-size);
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            transform-origin: 50% 90%;          /* se mueve "apoyada" desde abajo */
+            transform-origin: 50% 90%;
             filter: drop-shadow(0 6px 14px rgba(111, 142, 90, 0.35));
             transition: filter 0.4s ease;
-            animation: avatarFloat 4s ease-in-out infinite;   /* reposo: flota suavemente */
+            animation: avatarFloat 4s ease-in-out infinite;
             will-change: transform;
         }
         .avatar-img {
@@ -99,21 +100,22 @@
             user-select: none;
             pointer-events: none;
         }
-        /* Hablando: rebota como si moviera la boca */
+        /* avatar hablando */
         .avatar-stage.speaking {
             animation: avatarTalk 0.55s ease-in-out infinite;
             filter: drop-shadow(0 0 18px rgba(169, 192, 138, 0.8));
         }
-        /* Escuchando: se inclina y "late" atento */
+        /* avatar escuchando */
         .avatar-stage.listening {
             animation: avatarListen 1.2s ease-in-out infinite;
             filter: drop-shadow(0 0 16px rgba(111, 142, 90, 0.85));
         }
-        /* Pensando: balanceo lento */
+        /* avatar pensando */
         .avatar-stage.thinking {
             animation: avatarThink 1.6s ease-in-out infinite;
         }
 
+        /* animaciones del avatar */
         @keyframes avatarFloat {
             0%, 100% { transform: translateY(0); }
             50%      { transform: translateY(-5px); }
@@ -132,12 +134,12 @@
             0%, 100% { transform: rotate(-4deg); }
             50%      { transform: rotate(4deg); }
         }
-        /* Si la persona tiene activada la opción de reducir movimiento, el avatar se queda quieto */
+        /* sin movimiento si se prefiere reducirlo */
         @media (prefers-reduced-motion: reduce) {
             .avatar-stage { animation: none !important; }
         }
 
-        /* Breathing Circle */
+        /* círculo de respiración */
         .breath-circle {
             width: 180px;
             height: 180px;
@@ -169,375 +171,606 @@
             transform: scale(1);
             background: rgba(111, 142, 90, 0.06);
         }
+
+        /* scroll suave en la homepage */
+        html { scroll-behavior: smooth; }
+
+        /* transición homepage / app */
+        .view-leave { animation: viewLeave 0.45s ease forwards; pointer-events: none; }
+        .view-enter { animation: viewEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+        @keyframes viewLeave { to { opacity: 0; transform: translateY(-16px); } }
+        @keyframes viewEnter { from { opacity: 0; transform: translateY(16px); } }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .view-leave, .view-enter { animation-duration: 0.01ms; }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between bg-cream text-forest dark:bg-darkbg dark:text-darktext transition-colors duration-300">
 
-    <!-- Navbar -->
-    <header class="bg-mist/80 dark:bg-darkcard/80 backdrop-blur border-b border-sage/50 dark:border-darkborder sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <!-- LOGO: la misma imagen del avatar (assets/kaia.png) en pequeño.
-                     Tamaño: cambia w-9 h-9 (36 px) por w-10 h-10, w-11 h-11, etc.
-                     Si todavía no existe la imagen, se muestra el cerebro de antes. -->
-                <div class="w-9 h-9 shrink-0 flex items-center justify-center">
-                    <img id="logo-img" src="assets/kaia.png" alt="Kaia" class="w-full h-full object-contain drop-shadow" draggable="false"
-                         onerror="this.classList.add('hidden'); document.getElementById('logo-fallback').classList.remove('hidden');">
-                    <div id="logo-fallback" class="hidden">
-                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-forest to-moss dark:from-moss dark:to-darkborder flex items-center justify-center text-cream font-bold text-xl shadow-lg shadow-forest/15">
-                            <i class="fa-solid fa-brain"></i>
+    <!-- homepage -->
+    <div id="home-view" class="w-full">
+
+        <!-- cabecera de la homepage -->
+        <header class="bg-cream/80 dark:bg-darkbg/80 backdrop-blur border-b border-sage/50 dark:border-darkborder sticky top-0 z-50">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+                <a href="#inicio" class="flex items-center gap-3 hover:opacity-80 transition-opacity" aria-label="Kaia, ir al inicio de la página">
+                    <div class="w-9 h-9 shrink-0 flex items-center justify-center">
+                        <img src="assets/kaia.png" alt="" class="w-full h-full object-contain drop-shadow" draggable="false"
+                             onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+                        <div class="hidden">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-forest to-moss dark:from-moss dark:to-darkborder flex items-center justify-center text-cream font-bold text-xl shadow-lg shadow-forest/15">
+                                <i class="fa-solid fa-brain"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div>
                     <span class="text-xl font-bold tracking-tight text-forest dark:text-darktext">Kaia</span>
-                    <span class="text-xs text-forest dark:text-darkmuted block -mt-1 font-medium">Como a pasos de tortuga</span>
+                </a>
+
+                <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-forest-soft dark:text-darkmuted" aria-label="Secciones de la página">
+                    <a href="#beneficios" class="hover:text-forest dark:hover:text-darktext transition-colors">Beneficios</a>
+                    <a href="#como-funciona" class="hover:text-forest dark:hover:text-darktext transition-colors">Cómo funciona</a>
+                    <a href="#opiniones" class="hover:text-forest dark:hover:text-darktext transition-colors">Opiniones</a>
+                </nav>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="toggleDarkMode()" title="Cambiar modo oscuro/claro" aria-label="Cambiar modo oscuro/claro" class="w-9 h-9 rounded-full bg-cream dark:bg-darkcard border border-sage/60 dark:border-darkborder text-forest dark:text-darktext flex items-center justify-center hover:bg-sage/30 transition-all">
+                        <i class="fa-solid fa-moon text-xs dark:hidden"></i>
+                        <i class="fa-solid fa-sun text-xs text-amber-400 hidden dark:inline"></i>
+                    </button>
+                    <button type="button" onclick="enterApp()" class="px-4 py-2 rounded-xl bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg text-sm font-semibold flex items-center gap-2 shadow-lg shadow-forest/20 transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2 ring-offset-cream dark:ring-offset-darkbg">
+                        <i class="fa-solid fa-microphone"></i> Hablar con Kaia
+                    </button>
                 </div>
             </div>
+        </header>
 
-            <!-- Navigation Tabs -->
-            <nav class="hidden md:flex items-center gap-1 bg-cream/70 dark:bg-darkbg/70 p-1.5 rounded-xl border border-sage/40 dark:border-darkborder">
-                <button onclick="switchTab('assistant')" id="nav-assistant" class="px-4 py-2 rounded-lg text-sm font-medium transition-all bg-forest text-cream dark:bg-moss dark:text-darkbg font-semibold shadow">
-                    <i class="fa-solid fa-microphone-lines mr-2"></i>Asistente Kaia
-                </button>
-                <button onclick="switchTab('deconstruct')" id="nav-deconstruct" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext hover:bg-mist dark:hover:bg-darkborder transition-all">
-                    <i class="fa-solid fa-list-check mr-2"></i>Desglose Anti-Caos
-                </button>
-                <button onclick="switchTab('breathing')" id="nav-breathing" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext hover:bg-mist dark:hover:bg-darkborder transition-all">
-                    <i class="fa-solid fa-wind mr-2"></i>Escudo Anti-Burnout
-                </button>
-                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext hover:bg-mist dark:hover:bg-darkborder transition-all">
-                    <i class="fa-solid fa-chart-line mr-2"></i>Métricas de Estrés
-                </button>
-            </nav>
+        <!-- portada -->
+        <section id="inicio" class="relative overflow-hidden">
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-moss/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-16 lg:pt-24 lg:pb-28 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
-            <div class="flex items-center gap-2">
-                <!-- Acceso permanente a las líneas de apoyo -->
-                <button id="header-help-btn" type="button" onclick="showHelpModal()" title="Líneas de apoyo y emergencia" class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-900 hover:bg-rose-200 transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-life-ring"></i> Ayuda
-                </button>
-                
-                <!-- Botón de Modo Oscuro al lado de Voz Activa -->
-                <button id="dark-mode-toggle" type="button" onclick="toggleDarkMode()" title="Cambiar modo oscuro/claro" class="w-9 h-9 rounded-full bg-cream dark:bg-darkcard border border-sage/60 dark:border-darkborder text-forest dark:text-darktext flex items-center justify-center hover:bg-sage/30 transition-all">
-                    <i id="dark-mode-icon" class="fa-solid fa-moon text-xs"></i>
-                </button>
+                <!-- propuesta de valor -->
+                <div class="lg:col-span-7">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-forest dark:text-darktext">Cuando todo se junta, Kaia te acompaña a ir de a un paso.</h1>
+                    <p class="mt-6 text-lg leading-relaxed text-forest-soft dark:text-darkmuted max-w-xl">Habla o escribe lo que te preocupa. Kaia te escucha, divide la entrega que te abruma en pasos pequeños y te acompaña a respirar. Sin prisa, a pasos de tortuga.</p>
 
-                <span id="voice-status-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-moss/15 dark:bg-moss/20 text-forest dark:text-darktext border border-moss/40 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-moss animate-ping"></span> Voz Activa
-                </span>
-            </div>
-        </div>
-        
-        <!-- Mobile Navigation Bar -->
-        <div class="md:hidden flex justify-around bg-cream dark:bg-darkcard border-t border-sage/40 dark:border-darkborder py-2 px-1">
-            <button onclick="switchTab('assistant')" class="flex flex-col items-center text-xs text-forest dark:text-darktext font-medium">
-                <i class="fa-solid fa-microphone-lines text-base mb-1"></i>Kaia
-            </button>
-            <button onclick="switchTab('deconstruct')" class="flex flex-col items-center text-xs text-forest-soft dark:text-darkmuted hover:text-forest">
-                <i class="fa-solid fa-list-check text-base mb-1"></i>Desglose
-            </button>
-            <button onclick="switchTab('breathing')" class="flex flex-col items-center text-xs text-forest-soft dark:text-darkmuted hover:text-forest">
-                <i class="fa-solid fa-wind text-base mb-1"></i>Respirar
-            </button>
-            <button onclick="switchTab('dashboard')" class="flex flex-col items-center text-xs text-forest-soft dark:text-darkmuted hover:text-forest">
-                <i class="fa-solid fa-chart-line text-base mb-1"></i>Métricas
-            </button>
-        </div>
-    </header>
+                    <div class="mt-8 flex flex-col sm:flex-row gap-3">
+                        <button type="button" onclick="enterApp()" class="px-7 py-4 rounded-xl bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg text-base font-semibold flex items-center justify-center gap-2 shadow-lg shadow-forest/20 transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2 ring-offset-cream dark:ring-offset-darkbg">
+                            <i class="fa-solid fa-microphone text-lg"></i> Hablar con Kaia
+                        </button>
+                        <a href="#como-funciona" class="px-7 py-4 rounded-xl border border-sage dark:border-darkborder text-forest dark:text-darktext text-base font-semibold flex items-center justify-center hover:bg-sage/30 dark:hover:bg-darkborder transition-all">Ver cómo funciona</a>
+                    </div>
+                    <p class="mt-4 text-sm text-forest-soft dark:text-darkmuted">Con voz o por texto. Sin registro.</p>
+                </div>
 
-    <!-- Main Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
-
-        <!-- ================= TAB 1: ASISTENTE PRINCIPAL Y CHAT ================= -->
-        <section id="tab-assistant" class="space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                
-                <!-- Columna del avatar: tarjeta + panel de ayuda -->
-                <div class="lg:col-span-5 space-y-4">
-                <!-- Avatar Card -->
-                <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xl relative overflow-hidden">
-                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-moss/15 rounded-full blur-3xl pointer-events-none"></div>
-                    
-                    <span class="text-xs uppercase tracking-widest text-forest dark:text-darktext font-semibold mb-1 bg-moss/15 px-3 py-1 rounded-full border border-moss/35">
-                        Kaia • Copiloto en Vivo
-                    </span>
-                    <span class="text-[11px] text-forest-soft dark:text-darkmuted italic mb-4">"Como a pasos de tortuga"</span>
-                    
-                    <div class="my-6 relative flex items-center justify-center">
-                        <div id="sura-orb" class="avatar-stage calm">
-                            <img id="avatar-img" src="assets/kaia.png" alt="Kaia" class="avatar-img" draggable="false"
-                                 onerror="this.classList.add('hidden'); document.getElementById('avatar-placeholder').classList.remove('hidden');">
-                            <!-- Se muestra solo mientras todavía no existe tu imagen -->
-                            <div id="avatar-placeholder" class="hidden absolute inset-0">
-                                <div class="w-full h-full rounded-3xl border-2 border-dashed border-sage dark:border-darkborder flex flex-col items-center justify-center text-center p-3 text-forest-soft dark:text-darkmuted">
-                                    <i class="fa-regular fa-image text-2xl mb-1"></i>
-                                    <span class="text-[11px] leading-tight">Pon tu imagen en<br><b>assets/kaia.png</b></span>
+                <!-- ejemplo de conversación -->
+                <div class="lg:col-span-5">
+                    <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl relative overflow-hidden">
+                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-moss/15 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="relative flex justify-center my-4">
+                            <div class="avatar-stage" style="--avatar-size: 180px;">
+                                <img src="assets/kaia.png" alt="Kaia, tu compañera universitaria" class="avatar-img" draggable="false"
+                                     onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+                                <div class="hidden absolute inset-0">
+                                    <div class="w-full h-full rounded-3xl bg-gradient-to-tr from-forest to-moss dark:from-moss dark:to-darkborder flex items-center justify-center text-cream text-5xl">
+                                        <i class="fa-solid fa-brain"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="relative mt-6 space-y-3">
+                            <div class="ml-auto max-w-[88%] bg-moss/25 border border-moss/50 rounded-2xl rounded-tr-none p-3.5 text-sm text-forest dark:text-darktext">Tengo tres entregas para mañana y no sé por dónde empezar.</div>
+                            <div class="max-w-[88%] bg-cream dark:bg-darkbg border border-sage/60 dark:border-darkborder rounded-2xl rounded-tl-none p-3.5 text-sm text-forest dark:text-darktext">Vamos de a una. Dime cuál vence primero y la partimos en pasos pequeños.</div>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </section>
 
-                    <h2 id="sura-state-title" class="text-xl font-bold text-forest dark:text-darktext mb-1">Kaia está lista</h2>
-                    <p id="sura-state-desc" class="text-xs text-forest-soft dark:text-darkmuted max-w-xs mb-6">Presiona el micrófono o escribe para conversar y aliviar la carga universitaria paso a paso.</p>
-
-                    <!-- Voice Interaction Controls -->
-                    <div class="flex items-center gap-3 w-full justify-center">
-                        <button id="mic-btn" onclick="toggleMic()" class="px-5 py-3 rounded-xl bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-semibold flex items-center gap-2 shadow-lg shadow-forest/20 transition-all active:scale-95">
-                            <i class="fa-solid fa-microphone text-lg"></i>
-                            <span id="mic-btn-text">Hablar con Kaia</span>
-                        </button>
-                        <button onclick="stopVoice()" class="p-3 rounded-xl bg-sage/50 dark:bg-darkborder hover:bg-sage/70 dark:hover:bg-darkborder/80 text-forest dark:text-darktext transition-all" title="Silenciar Voz">
-                            <i class="fa-solid fa-volume-xmark"></i>
-                        </button>
+        <!-- beneficios -->
+        <section id="beneficios" class="scroll-mt-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+                <div class="lg:col-span-4 lg:sticky lg:top-28 self-start">
+                    <h2 class="text-3xl sm:text-4xl font-bold tracking-tight leading-tight text-forest dark:text-darktext">Todo lo que necesitas para sostener el semestre, en un solo lugar.</h2>
+                    <p class="mt-4 text-forest-soft dark:text-darkmuted leading-relaxed">Cada herramienta resuelve un momento distinto del día a día universitario.</p>
+                </div>
+                <div class="lg:col-span-8 divide-y divide-sage/50 dark:divide-darkborder border-y border-sage/50 dark:border-darkborder">
+                    <div class="flex gap-5 py-6">
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-moss/15 text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-microphone-lines"></i></div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-forest dark:text-darktext">Asistente por voz y chat</h3>
+                            <p class="mt-1 text-forest-soft dark:text-darkmuted leading-relaxed">Conversa con Kaia hablando o escribiendo. Responde con calidez, adapta su ritmo al tuyo y puede retomar la conversación donde la dejaste.</p>
+                        </div>
                     </div>
+                    <div class="flex gap-5 py-6">
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-moss/15 text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-list-check"></i></div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-forest dark:text-darktext">Desglose Anti-Caos</h3>
+                            <p class="mt-1 text-forest-soft dark:text-darkmuted leading-relaxed">Escribe la entrega que te agobia y recibe de 3 a 5 micro-pasos, cada uno con un tiempo estimado. Incluye un temporizador de foco de 25 minutos.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5 py-6">
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-moss/15 text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-wind"></i></div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-forest dark:text-darktext">Escudo Anti-Burnout</h3>
+                            <p class="mt-1 text-forest-soft dark:text-darkmuted leading-relaxed">Un ejercicio guiado de respiración 4-7-8, con indicaciones en voz, para bajar el ritmo antes de seguir con lo pendiente.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5 py-6">
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-moss/15 text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-chart-line"></i></div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-forest dark:text-darktext">Métricas de estrés</h3>
+                            <p class="mt-1 text-forest-soft dark:text-darkmuted leading-relaxed">Un panel con gráficos sencillos de estrés percibido y tareas superadas para ver cómo avanza tu semana.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5 py-6">
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-rose-200/70 dark:bg-rose-900/50 text-rose-600 dark:text-rose-300 flex items-center justify-center"><i class="fa-solid fa-life-ring"></i></div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-forest dark:text-darktext">Ayuda siempre a la vista</h3>
+                            <p class="mt-1 text-forest-soft dark:text-darkmuted leading-relaxed">El botón Ayuda con líneas de apoyo está visible en todo momento y Kaia te lo recuerda si detecta que estás pasando por una crisis.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                    <!-- Quick Emotional Prompts -->
-                    <div class="mt-6 pt-6 border-t border-sage/50 dark:border-darkborder w-full text-left">
-                        <span class="text-xs text-forest-soft dark:text-darkmuted block mb-2 font-medium"><i class="fa-regular fa-lightbulb text-moss mr-1"></i> Desahógate en un clic:</span>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="sendQuickPrompt('Estoy colapsado con 3 entregas pesadas para mañana')" class="text-xs bg-cream dark:bg-darkbg hover:bg-sage/40 dark:hover:bg-darkborder border border-sage dark:border-darkborder text-forest-soft dark:text-darkmuted px-3 py-1.5 rounded-lg transition-all text-left">
-                                😫 "Estoy colapsado con 3 entregas"
-                            </button>
-                            <button onclick="sendQuickPrompt('Siento mucha ansiedad y no puedo concentrarme')" class="text-xs bg-cream dark:bg-darkbg hover:bg-sage/40 dark:hover:bg-darkborder border border-sage dark:border-darkborder text-forest-soft dark:text-darkmuted px-3 py-1.5 rounded-lg transition-all text-left">
-                                🧠 "Mucha ansiedad y no me concentro"
-                            </button>
-                            <button onclick="sendQuickPrompt('¿Cómo organizo un proyecto largo en pasos simples?')" class="text-xs bg-cream dark:bg-darkbg hover:bg-sage/40 dark:hover:bg-darkborder border border-sage dark:border-darkborder text-forest-soft dark:text-darkmuted px-3 py-1.5 rounded-lg transition-all text-left">
-                                📅 "¿Cómo divido un proyecto largo?"
+        <!-- cómo funciona -->
+        <section id="como-funciona" class="scroll-mt-20 bg-mist/50 dark:bg-darkcard/50 border-y border-sage/40 dark:border-darkborder">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-forest dark:text-darktext max-w-xl">Así se avanza a pasos de tortuga</h2>
+                <ol class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
+                    <li class="relative">
+                        <span aria-hidden="true" class="hidden md:block absolute top-5 left-12 -right-6 border-t-2 border-dashed border-moss/50"></span>
+                        <div class="relative w-10 h-10 rounded-full bg-cream dark:bg-darkbg border-2 border-moss flex items-center justify-center font-bold text-forest dark:text-darktext">1</div>
+                        <h3 class="mt-4 font-semibold text-lg text-forest dark:text-darktext">Cuéntale cómo vas</h3>
+                        <p class="mt-1 text-forest-soft dark:text-darkmuted leading-relaxed">Habla con el micrófono o escribe. Si no sabes cómo empezar, elige uno de los mensajes rápidos.</p>
+                    </li>
+                    <li class="relative">
+                        <span aria-hidden="true" class="hidden md:block absolute top-5 left-12 -right-6 border-t-2 border-dashed border-moss/50"></span>
+                        <div class="relative w-10 h-10 rounded-full bg-cream dark:bg-darkbg border-2 border-moss flex items-center justify-center font-bold text-forest dark:text-darktext">2</div>
+                        <h3 class="mt-4 font-semibold text-lg text-forest dark:text-darktext">Divide lo que pesa</h3>
+                        <p class="mt-1 text-forest-soft dark:text-darkmuted leading-relaxed">Escribe la tarea que te abruma y Kaia la convierte en pasos pequeños, con el tiempo que toma cada uno.</p>
+                    </li>
+                    <li class="relative">
+                        <div class="relative w-10 h-10 rounded-full bg-cream dark:bg-darkbg border-2 border-moss flex items-center justify-center font-bold text-forest dark:text-darktext">3</div>
+                        <h3 class="mt-4 font-semibold text-lg text-forest dark:text-darktext">Pausa y sigue</h3>
+                        <p class="mt-1 text-forest-soft dark:text-darkmuted leading-relaxed">Respira con la guía en voz, activa el temporizador de foco y avanza un paso a la vez.</p>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- opiniones (textos de ejemplo, editar nombre, carrera y texto) -->
+        <section id="opiniones" class="scroll-mt-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-forest dark:text-darktext max-w-xl">Estudiantes que ya se la llevan con más calma</h2>
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-10">
+                <figure class="border-l-2 border-moss pl-6">
+                    <blockquote class="text-forest dark:text-darktext leading-relaxed">“Tenía tres entregas la misma semana y no sabía por dónde empezar. El desglose me dio una lista corta y por fin pude arrancar.”</blockquote>
+                    <figcaption class="mt-5 flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-full bg-sage/50 dark:bg-darkborder flex items-center justify-center text-xs font-bold text-forest dark:text-darktext">VR</span>
+                        <span class="text-sm">
+                            <span class="block font-semibold text-forest dark:text-darktext">Valentina R.</span>
+                            <span class="block text-forest-soft dark:text-darkmuted">Ingeniería de Sistemas</span>
+                        </span>
+                    </figcaption>
+                </figure>
+                <figure class="border-l-2 border-moss pl-6">
+                    <blockquote class="text-forest dark:text-darktext leading-relaxed">“No suena a manual de autoayuda. Me escucha, me responde corto cuando estoy cansado y no me llena de consejos que no pedí.”</blockquote>
+                    <figcaption class="mt-5 flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-full bg-sage/50 dark:bg-darkborder flex items-center justify-center text-xs font-bold text-forest dark:text-darktext">DM</span>
+                        <span class="text-sm">
+                            <span class="block font-semibold text-forest dark:text-darktext">Daniel M.</span>
+                            <span class="block text-forest-soft dark:text-darkmuted">Derecho</span>
+                        </span>
+                    </figcaption>
+                </figure>
+                <figure class="border-l-2 border-moss pl-6">
+                    <blockquote class="text-forest dark:text-darktext leading-relaxed">“Hago el ejercicio de respiración antes de exponer. Son un par de minutos y me ayuda a bajar los nervios.”</blockquote>
+                    <figcaption class="mt-5 flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-full bg-sage/50 dark:bg-darkborder flex items-center justify-center text-xs font-bold text-forest dark:text-darktext">CT</span>
+                        <span class="text-sm">
+                            <span class="block font-semibold text-forest dark:text-darktext">Camila T.</span>
+                            <span class="block text-forest-soft dark:text-darkmuted">Diseño Gráfico</span>
+                        </span>
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <!-- llamado final -->
+        <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 lg:pb-24">
+            <div class="rounded-3xl bg-forest dark:bg-darkcard dark:border dark:border-darkborder px-6 py-12 sm:px-12 sm:py-16 text-center">
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-cream dark:text-darktext">Empieza por un paso pequeño.</h2>
+                <p class="mt-4 text-cream/80 dark:text-darkmuted max-w-xl mx-auto leading-relaxed">Cuéntale a Kaia cómo va tu día. No necesitas crear una cuenta.</p>
+                <button type="button" onclick="enterApp()" class="mt-8 inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-cream hover:bg-mist dark:bg-moss dark:hover:bg-moss/80 text-forest dark:text-darkbg text-base font-semibold shadow-lg transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 ring-offset-forest dark:ring-offset-darkcard">
+                    <i class="fa-solid fa-microphone text-lg"></i> Hablar con Kaia
+                </button>
+                <p class="mt-6 text-xs text-cream/70 dark:text-darkmuted max-w-md mx-auto leading-relaxed">Kaia es una compañera de apoyo y no reemplaza a un profesional de la salud. Si estás en crisis, usa el botón Ayuda dentro de la app.</p>
+            </div>
+        </section>
+
+        <!-- pie de la homepage -->
+        <footer class="border-t border-sage/40 dark:border-darkborder py-6 px-4 text-xs text-forest-soft dark:text-darkmuted">
+            <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+                <p><span class="font-semibold text-forest dark:text-darktext">Kaia</span> &bull; Como a pasos de tortuga</p>
+                <p>&copy; 2026 &mdash; Prototipo Funcional</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- aplicación -->
+    <div id="app-view" class="hidden">
+        <div class="min-h-screen flex flex-col justify-between">
+            <!-- cabecera de la app -->
+            <header class="bg-mist/80 dark:bg-darkcard/80 backdrop-blur border-b border-sage/50 dark:border-darkborder sticky top-0 z-50">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                    <a href="/" onclick="goHome(); return false;" title="Volver al inicio" aria-label="Volver al inicio" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                        <!-- logo -->
+                        <div class="w-9 h-9 shrink-0 flex items-center justify-center">
+                            <img id="logo-img" src="assets/kaia.png" alt="Kaia" class="w-full h-full object-contain drop-shadow" draggable="false"
+                                 onerror="this.classList.add('hidden'); document.getElementById('logo-fallback').classList.remove('hidden');">
+                            <div id="logo-fallback" class="hidden">
+                                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-forest to-moss dark:from-moss dark:to-darkborder flex items-center justify-center text-cream font-bold text-xl shadow-lg shadow-forest/15">
+                                    <i class="fa-solid fa-brain"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-xl font-bold tracking-tight text-forest dark:text-darktext">Kaia</span>
+                            <span class="text-xs text-forest dark:text-darkmuted block -mt-1 font-medium">Como a pasos de tortuga</span>
+                        </div>
+                    </a>
+
+                    <!-- pestañas de navegación -->
+                    <nav class="hidden md:flex items-center gap-1 bg-cream/70 dark:bg-darkbg/70 p-1.5 rounded-xl border border-sage/40 dark:border-darkborder">
+                        <button onclick="switchTab('assistant')" id="nav-assistant" class="px-4 py-2 rounded-lg text-sm font-medium transition-all bg-forest text-cream dark:bg-moss dark:text-darkbg font-semibold shadow">
+                            <i class="fa-solid fa-microphone-lines mr-2"></i>Asistente Kaia
+                        </button>
+                        <button onclick="switchTab('deconstruct')" id="nav-deconstruct" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext hover:bg-mist dark:hover:bg-darkborder transition-all">
+                            <i class="fa-solid fa-list-check mr-2"></i>Desglose Anti-Caos
+                        </button>
+                        <button onclick="switchTab('breathing')" id="nav-breathing" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext hover:bg-mist dark:hover:bg-darkborder transition-all">
+                            <i class="fa-solid fa-wind mr-2"></i>Escudo Anti-Burnout
+                        </button>
+                        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="px-4 py-2 rounded-lg text-sm font-medium text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext hover:bg-mist dark:hover:bg-darkborder transition-all">
+                            <i class="fa-solid fa-chart-line mr-2"></i>Métricas de Estrés
+                        </button>
+                    </nav>
+
+                    <div class="flex items-center gap-2">
+                        <!-- botón de ayuda -->
+                        <button id="header-help-btn" type="button" onclick="showHelpModal()" title="Líneas de apoyo y emergencia" class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-900 hover:bg-rose-200 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-life-ring"></i> Ayuda
+                        </button>
+                
+                        <!-- botón de github (pegar aquí el enlace del repositorio) -->
+                        <a id="github-btn" href="https://github.com/TU-USUARIO/TU-REPOSITORIO" target="_blank" rel="noopener noreferrer" title="Ver el código en GitHub" aria-label="Ver el código en GitHub" class="w-9 h-9 rounded-full bg-cream dark:bg-darkcard border border-sage/60 dark:border-darkborder text-forest dark:text-darktext flex items-center justify-center hover:bg-sage/30 transition-all">
+                            <i class="fa-brands fa-github text-base"></i>
+                        </a>
+
+                        <!-- botón de modo oscuro -->
+                        <button id="dark-mode-toggle" type="button" onclick="toggleDarkMode()" title="Cambiar modo oscuro/claro" class="w-9 h-9 rounded-full bg-cream dark:bg-darkcard border border-sage/60 dark:border-darkborder text-forest dark:text-darktext flex items-center justify-center hover:bg-sage/30 transition-all">
+                            <i id="dark-mode-icon" class="fa-solid fa-moon text-xs"></i>
+                        </button>
+
+                        <span id="voice-status-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-moss/15 dark:bg-moss/20 text-forest dark:text-darktext border border-moss/40 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-moss animate-ping"></span> Voz Activa
+                        </span>
+                    </div>
+                </div>
+        
+                <!-- navegación móvil -->
+                <div class="md:hidden flex justify-around bg-cream dark:bg-darkcard border-t border-sage/40 dark:border-darkborder py-2 px-1">
+                    <button onclick="switchTab('assistant')" class="flex flex-col items-center text-xs text-forest dark:text-darktext font-medium">
+                        <i class="fa-solid fa-microphone-lines text-base mb-1"></i>Kaia
+                    </button>
+                    <button onclick="switchTab('deconstruct')" class="flex flex-col items-center text-xs text-forest-soft dark:text-darkmuted hover:text-forest">
+                        <i class="fa-solid fa-list-check text-base mb-1"></i>Desglose
+                    </button>
+                    <button onclick="switchTab('breathing')" class="flex flex-col items-center text-xs text-forest-soft dark:text-darkmuted hover:text-forest">
+                        <i class="fa-solid fa-wind text-base mb-1"></i>Respirar
+                    </button>
+                    <button onclick="switchTab('dashboard')" class="flex flex-col items-center text-xs text-forest-soft dark:text-darkmuted hover:text-forest">
+                        <i class="fa-solid fa-chart-line text-base mb-1"></i>Métricas
+                    </button>
+                </div>
+            </header>
+
+            <!-- contenido principal -->
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+                <!-- pestaña: asistente y chat -->
+                <section id="tab-assistant" class="space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                        <!-- columna del avatar -->
+                        <div class="lg:col-span-5 space-y-4">
+                        <!-- tarjeta del avatar -->
+                        <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xl relative overflow-hidden">
+                            <div class="absolute -top-10 -left-10 w-40 h-40 bg-moss/15 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                            <span class="text-xs uppercase tracking-widest text-forest dark:text-darktext font-semibold mb-1 bg-moss/15 px-3 py-1 rounded-full border border-moss/35">
+                                Kaia • Copiloto en Vivo
+                            </span>
+                            <span class="text-[11px] text-forest-soft dark:text-darkmuted italic mb-4">"Como a pasos de tortuga"</span>
+                    
+                            <div class="my-6 relative flex items-center justify-center">
+                                <div id="sura-orb" class="avatar-stage calm">
+                                    <img id="avatar-img" src="assets/kaia.png" alt="Kaia" class="avatar-img" draggable="false"
+                                         onerror="this.classList.add('hidden'); document.getElementById('avatar-placeholder').classList.remove('hidden');">
+                                    <!-- imagen de respaldo del avatar -->
+                                    <div id="avatar-placeholder" class="hidden absolute inset-0">
+                                        <div class="w-full h-full rounded-3xl border-2 border-dashed border-sage dark:border-darkborder flex flex-col items-center justify-center text-center p-3 text-forest-soft dark:text-darkmuted">
+                                            <i class="fa-regular fa-image text-2xl mb-1"></i>
+                                            <span class="text-[11px] leading-tight">Pon tu imagen en<br><b>assets/kaia.png</b></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h2 id="sura-state-title" class="text-xl font-bold text-forest dark:text-darktext mb-1">Kaia está lista</h2>
+                            <p id="sura-state-desc" class="text-xs text-forest-soft dark:text-darkmuted max-w-xs mb-6">Presiona el micrófono o escribe para conversar y aliviar la carga universitaria paso a paso.</p>
+
+                            <!-- controles de voz -->
+                            <div class="flex items-center gap-3 w-full justify-center">
+                                <button id="mic-btn" onclick="toggleMic()" class="px-5 py-3 rounded-xl bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-semibold flex items-center gap-2 shadow-lg shadow-forest/20 transition-all active:scale-95">
+                                    <i class="fa-solid fa-microphone text-lg"></i>
+                                    <span id="mic-btn-text">Hablar con Kaia</span>
+                                </button>
+                                <button onclick="stopVoice()" class="p-3 rounded-xl bg-sage/50 dark:bg-darkborder hover:bg-sage/70 dark:hover:bg-darkborder/80 text-forest dark:text-darktext transition-all" title="Silenciar Voz">
+                                    <i class="fa-solid fa-volume-xmark"></i>
+                                </button>
+                            </div>
+
+                            <!-- mensajes rápidos -->
+                            <div class="mt-6 pt-6 border-t border-sage/50 dark:border-darkborder w-full text-left">
+                                <span class="text-xs text-forest-soft dark:text-darkmuted block mb-2 font-medium"><i class="fa-regular fa-lightbulb text-moss mr-1"></i> Desahógate en un clic:</span>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="sendQuickPrompt('Estoy colapsado con 3 entregas pesadas para mañana')" class="text-xs bg-cream dark:bg-darkbg hover:bg-sage/40 dark:hover:bg-darkborder border border-sage dark:border-darkborder text-forest-soft dark:text-darkmuted px-3 py-1.5 rounded-lg transition-all text-left">
+                                        😫 "Estoy colapsado con 3 entregas"
+                                    </button>
+                                    <button onclick="sendQuickPrompt('Siento mucha ansiedad y no puedo concentrarme')" class="text-xs bg-cream dark:bg-darkbg hover:bg-sage/40 dark:hover:bg-darkborder border border-sage dark:border-darkborder text-forest-soft dark:text-darkmuted px-3 py-1.5 rounded-lg transition-all text-left">
+                                        🧠 "Mucha ansiedad y no me concentro"
+                                    </button>
+                                    <button onclick="sendQuickPrompt('¿Cómo organizo un proyecto largo en pasos simples?')" class="text-xs bg-cream dark:bg-darkbg hover:bg-sage/40 dark:hover:bg-darkborder border border-sage dark:border-darkborder text-forest-soft dark:text-darkmuted px-3 py-1.5 rounded-lg transition-all text-left">
+                                        📅 "¿Cómo divido un proyecto largo?"
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- personalización de voz -->
+                            <div id="customize-panel" class="mt-6 pt-6 border-t border-sage/50 dark:border-darkborder w-full text-left">
+                                <span class="text-xs text-forest-soft dark:text-darkmuted block mb-3 font-medium"><i class="fa-solid fa-sliders text-moss mr-1"></i> Personaliza a Kaia</span>
+
+                                <label for="voice-select" class="text-xs text-forest-soft dark:text-darkmuted block mb-1">Voz</label>
+                                <select id="voice-select" class="w-full bg-cream dark:bg-darkbg border border-sage dark:border-darkborder focus:border-moss focus:ring-1 focus:ring-moss rounded-xl px-3 py-2 text-sm text-forest dark:text-darktext outline-none transition-all mb-4">
+                                    <option value="female">Femenina (Gentil)</option>
+                                    <option value="male">Masculina (Cálida)</option>
+                                </select>
+
+                            </div>
+        </div>
+
+                        <!-- panel de ayuda de emergencia -->
+                        <div id="emergency-help-panel" class="hidden">
+                            <div role="alert" class="bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-900 rounded-2xl p-5 shadow-xl shadow-rose-900/20 text-left">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-rose-200/70 dark:bg-rose-900/50 text-rose-600 dark:text-rose-300 flex items-center justify-center shrink-0">
+                                        <i class="fa-solid fa-heart-pulse"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-rose-900 dark:text-rose-200 text-sm">No estás solo</h3>
+                                        <p class="text-xs text-rose-800 dark:text-rose-300 mt-1">No estás solo ni sola en esto. Hay personas que quieren escucharte y acompañarte ahora mismo, y pedir ayuda es un acto de valentía.</p>
+                                        <button type="button" onclick="showHelpModal()" class="mt-3 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-semibold shadow-lg shadow-rose-900/20 transition-all active:scale-95">
+                                            <i class="fa-solid fa-life-ring mr-1"></i> Ver líneas de apoyo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+
+                        <!-- chat -->
+                        <div class="lg:col-span-7 bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-4 sm:p-6 flex flex-col h-[560px] shadow-xl">
+                            <div class="flex flex-wrap items-center justify-between gap-y-1 pb-3 border-b border-sage/50 dark:border-darkborder">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-comments text-moss"></i>
+                                    <h3 class="font-semibold text-forest dark:text-darktext">Chat de Descarga Empática</h3>
+                                    <!-- indicador de guardado -->
+                                    <span id="autosave-indicator" class="inline-flex items-center gap-1 text-[11px] text-forest-soft dark:text-darkmuted" title="Tu conversación se guarda en este navegador">
+                                        <i class="fa-solid fa-floppy-disk"></i>
+                                        <span id="autosave-text">Guardado automático</span>
+                                    </span>
+                                    <button id="clear-chat-btn" type="button" onclick="clearConversation()" title="Borrar esta conversación" aria-label="Borrar esta conversación" class="text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext transition-all">
+                                        <i class="fa-solid fa-trash-can text-[11px]"></i>
+                                    </button>
+                                </div>
+                                <span class="text-xs text-forest-soft dark:text-darkmuted">100% Confidencial y Seguro</span>
+                            </div>
+
+                            <!-- historial de mensajes -->
+                            <div id="chat-messages" class="flex-1 overflow-y-auto py-4 space-y-4 pr-2">
+                                <!-- mensaje inicial -->
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-forest dark:bg-moss flex items-center justify-center text-cream dark:text-darkbg font-bold shrink-0 text-sm">
+                                        <i class="fa-solid fa-brain"></i>
+                                    </div>
+                                    <div class="bg-cream dark:bg-darkbg border border-sage/60 dark:border-darkborder rounded-2xl rounded-tl-none p-3.5 max-w-[85%] text-sm text-forest dark:text-darktext">
+                                        "¡Hola! Soy Kaia. Sé que a veces la universidad se pone pesada y parece que todo se junta. Vamos a llevárnosla a pasos de tortuga, sin prisa. Respira, que no estás solo en esto. ¿Cómo va tu día hoy?"
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- entrada de mensaje -->
+                            <form onsubmit="handleChatSubmit(event)" class="mt-3 flex items-center gap-2 pt-3 border-t border-sage/50 dark:border-darkborder">
+                                <input type="text" id="chat-input" autocomplete="off" name="chat_input_kaia" placeholder="Escribe lo que sientes o lo que tienes pendiente..." class="flex-1 bg-cream dark:bg-darkbg border border-sage dark:border-darkborder focus:border-moss focus:ring-1 focus:ring-moss rounded-xl px-4 py-3 text-sm text-forest dark:text-darktext placeholder-forest-soft/70 dark:placeholder-darkmuted/70 outline-none transition-all">
+                                <button type="submit" class="bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg p-3 rounded-xl font-semibold shadow-md transition-all">
+                                    <i class="fa-solid fa-paper-plane text-base"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- pestaña: desglose anti-caos -->
+                <section id="tab-deconstruct" class="hidden space-y-6">
+                    <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl">
+                        <div class="max-w-2xl mb-6">
+                            <span class="text-xs uppercase tracking-widest text-forest dark:text-darktext font-semibold bg-moss/15 px-3 py-1 rounded-full border border-moss/30">
+                                Desglose Inteligente de Tareas
+                            </span>
+                            <h2 class="text-2xl font-bold text-forest dark:text-darktext mt-2">Transforma el caos en pasos ejecutables</h2>
+                            <p class="text-forest-soft dark:text-darkmuted text-sm mt-1">Escribe la entrega pesada o proyecto que te genera estrés y Kaia lo dividirá en micro-metas lógicas a pasos de tortuga.</p>
+                        </div>
+
+                        <!-- formulario de tarea -->
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <input type="text" autocomplete="off" id="task-input" placeholder="Ej: Proyecto final de Programación / Ensayo de 10 páginas de Historia" class="flex-1 bg-cream dark:bg-darkbg border border-sage dark:border-darkborder focus:border-moss rounded-xl px-4 py-3 text-sm text-forest dark:text-darktext placeholder-forest-soft/70 dark:placeholder-darkmuted/70 outline-none">
+                            <button onclick="deconstructTask()" class="bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-semibold px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-forest/15">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Desglosar con IA
                             </button>
                         </div>
                     </div>
 
-                    <!-- MÓDULO 2: Panel de personalización -->
-                    <div id="customize-panel" class="mt-6 pt-6 border-t border-sage/50 dark:border-darkborder w-full text-left">
-                        <span class="text-xs text-forest-soft dark:text-darkmuted block mb-3 font-medium"><i class="fa-solid fa-sliders text-moss mr-1"></i> Personaliza a Kaia</span>
+                    <!-- resultados del desglose -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- lista de pasos -->
+                        <div class="lg:col-span-8 bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl">
+                            <h3 class="font-bold text-lg text-forest dark:text-darktext mb-4 flex items-center justify-between">
+                                <span><i class="fa-solid fa-tasks text-moss mr-2"></i> Plan de Acción Sugerido</span>
+                                <span id="task-count-badge" class="text-xs bg-sage/50 dark:bg-darkborder text-forest dark:text-darktext px-2.5 py-1 rounded-full">0 Pasos</span>
+                            </h3>
 
-                        <label for="voice-select" class="text-xs text-forest-soft dark:text-darkmuted block mb-1">Voz</label>
-                        <select id="voice-select" class="w-full bg-cream dark:bg-darkbg border border-sage dark:border-darkborder focus:border-moss focus:ring-1 focus:ring-moss rounded-xl px-3 py-2 text-sm text-forest dark:text-darktext outline-none transition-all mb-4">
-                            <option value="female">Femenina (Gentil)</option>
-                            <option value="male">Masculina (Cálida)</option>
-                        </select>
-
-                    </div>
-</div>
-
-                <!-- MÓDULO 3: Panel de ayuda -->
-                <div id="emergency-help-panel" class="hidden">
-                    <div role="alert" class="bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-900 rounded-2xl p-5 shadow-xl shadow-rose-900/20 text-left">
-                        <div class="flex items-start gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-rose-200/70 dark:bg-rose-900/50 text-rose-600 dark:text-rose-300 flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-heart-pulse"></i>
+                            <div id="subtasks-container" class="space-y-3">
+                                <div class="text-center py-10 text-forest-soft dark:text-darkmuted border border-dashed border-sage dark:border-darkborder rounded-xl">
+                                    <i class="fa-solid fa-layer-group text-3xl mb-2 text-moss"></i>
+                                    <p class="text-sm">Ingresa una tarea pesada arriba para generar tu plan de ataque sin ansiedad.</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 class="font-semibold text-rose-900 dark:text-rose-200 text-sm">No estás solo</h3>
-                                <p class="text-xs text-rose-800 dark:text-rose-300 mt-1">No estás solo ni sola en esto. Hay personas que quieren escucharte y acompañarte ahora mismo, y pedir ayuda es un acto de valentía.</p>
-                                <button type="button" onclick="showHelpModal()" class="mt-3 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-semibold shadow-lg shadow-rose-900/20 transition-all active:scale-95">
-                                    <i class="fa-solid fa-life-ring mr-1"></i> Ver líneas de apoyo
+                        </div>
+
+                        <!-- temporizador de foco -->
+                        <div class="lg:col-span-4 bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xl">
+                            <span class="text-xs text-forest dark:text-darktext uppercase font-semibold tracking-wider">Temporizador de Foco Sin Presión</span>
+                    
+                            <div class="my-6">
+                                <div class="text-5xl font-extrabold text-forest dark:text-darktext font-mono tracking-tight" id="pomo-timer">25:00</div>
+                                <span class="text-xs text-forest-soft dark:text-darkmuted mt-1 block">Modo Enfoque Relajado</span>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <button id="pomo-btn" onclick="togglePomodoro()" class="bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-semibold px-5 py-2.5 rounded-xl shadow-md transition-all">
+                                    <i class="fa-solid fa-play mr-1"></i> Iniciar
+                                </button>
+                                <button onclick="resetPomodoro()" class="bg-sage/50 dark:bg-darkborder hover:bg-sage/70 dark:hover:bg-darkborder/80 text-forest dark:text-darktext font-semibold px-4 py-2.5 rounded-xl transition-all">
+                                    <i class="fa-solid fa-rotate-right"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-                </div>
-                </div>
+                </section>
 
-                <!-- Chat Box Area -->
-                <div class="lg:col-span-7 bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-4 sm:p-6 flex flex-col h-[560px] shadow-xl">
-                    <div class="flex flex-wrap items-center justify-between gap-y-1 pb-3 border-b border-sage/50 dark:border-darkborder">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-comments text-moss"></i>
-                            <h3 class="font-semibold text-forest dark:text-darktext">Chat de Descarga Empática</h3>
-                            <!-- Persistencia -->
-                            <span id="autosave-indicator" class="inline-flex items-center gap-1 text-[11px] text-forest-soft dark:text-darkmuted" title="Tu conversación se guarda en este navegador">
-                                <i class="fa-solid fa-floppy-disk"></i>
-                                <span id="autosave-text">Guardado automático</span>
-                            </span>
-                            <button id="clear-chat-btn" type="button" onclick="clearConversation()" title="Borrar esta conversación" aria-label="Borrar esta conversación" class="text-forest-soft dark:text-darkmuted hover:text-forest dark:hover:text-darktext transition-all">
-                                <i class="fa-solid fa-trash-can text-[11px]"></i>
+
+                <!-- pestaña: escudo anti-burnout -->
+                <section id="tab-breathing" class="hidden space-y-6">
+                    <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-8 shadow-xl text-center flex flex-col items-center justify-center min-h-[480px]">
+                        <span class="text-xs uppercase tracking-widest text-forest dark:text-darktext font-semibold bg-moss/15 px-3 py-1 rounded-full border border-moss/30 mb-4">
+                            Técnica de Regulación 4-7-8
+                        </span>
+                
+                        <h2 class="text-2xl font-bold text-forest dark:text-darktext mb-2">Pausa Activa Anti-Ansiedad</h2>
+                        <p class="text-forest-soft dark:text-darkmuted text-sm max-w-md mb-8">Esta técnica científicamente probada desacelera tu ritmo cardíaco y reduce la respuesta de estrés en el cerebro en menos de 2 minutos.</p>
+
+                        <!-- círculo de respiración -->
+                        <div class="my-8 flex items-center justify-center relative">
+                            <div id="breath-visualizer" class="breath-circle">
+                                <span id="breath-status-text" class="text-lg font-bold text-forest dark:text-darktext uppercase tracking-wider">Listo</span>
+                            </div>
+                        </div>
+
+                        <!-- botón del ejercicio -->
+                        <div class="flex items-center gap-4 mt-4">
+                            <button id="start-breath-btn" onclick="toggleBreathingCycle()" class="px-8 py-3.5 bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-bold rounded-xl shadow-lg shadow-forest/20 transition-all text-base">
+                                <i class="fa-solid fa-wind mr-2"></i> Iniciar Ejercicio
                             </button>
                         </div>
-                        <span class="text-xs text-forest-soft dark:text-darkmuted">100% Confidencial y Seguro</span>
                     </div>
+                </section>
 
-                    <!-- Message History -->
-                    <div id="chat-messages" class="flex-1 overflow-y-auto py-4 space-y-4 pr-2">
-                        <!-- Default Initial Message -->
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-forest dark:bg-moss flex items-center justify-center text-cream dark:text-darkbg font-bold shrink-0 text-sm">
-                                <i class="fa-solid fa-brain"></i>
+
+                <!-- pestaña: métricas de estrés -->
+                <section id="tab-dashboard" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- tarjetas de métricas -->
+                        <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-5 shadow-xl">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-forest-soft dark:text-darkmuted uppercase">Reducción de Estrés</span>
+                                <div class="w-8 h-8 rounded-lg bg-moss/15 text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-arrow-trend-down"></i></div>
                             </div>
-                            <div class="bg-cream dark:bg-darkbg border border-sage/60 dark:border-darkborder rounded-2xl rounded-tl-none p-3.5 max-w-[85%] text-sm text-forest dark:text-darktext">
-                                "¡Hola! Soy Kaia. Sé que a veces la universidad se pone pesada y parece que todo se junta. Vamos a llevárnosla a pasos de tortuga, sin prisa. Respira, que no estás solo en esto. ¿Cómo va tu día hoy?"
+                            <div class="text-3xl font-bold text-forest dark:text-darktext mt-2">-42%</div>
+                            <span class="text-xs text-forest dark:text-darkmuted font-medium block mt-1"><i class="fa-solid fa-circle-check mr-1"></i> Respecto a la semana anterior</span>
+                        </div>
+
+                        <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-5 shadow-xl">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-forest-soft dark:text-darkmuted uppercase">Tiempo de Foco Saludable</span>
+                                <div class="w-8 h-8 rounded-lg bg-sage/40 dark:bg-darkborder text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-clock"></i></div>
                             </div>
+                            <div class="text-3xl font-bold text-forest dark:text-darktext mt-2">14.5 hrs</div>
+                            <span class="text-xs text-forest dark:text-darkmuted font-medium block mt-1"><i class="fa-solid fa-shield-halved mr-1"></i> Con pausas activas</span>
+                        </div>
+
+                        <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-5 shadow-xl">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-forest-soft dark:text-darkmuted uppercase">Sesiones de Desahogo</span>
+                                <div class="w-8 h-8 rounded-lg bg-forest/10 dark:bg-darkborder text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-heart-pulse"></i></div>
+                            </div>
+                            <div class="text-3xl font-bold text-forest dark:text-darktext mt-2">8 Sesiones</div>
+                            <span class="text-xs text-forest dark:text-darkmuted font-medium block mt-1"><i class="fa-solid fa-sparkles mr-1"></i> Impacto empático positivo</span>
                         </div>
                     </div>
 
-                    <!-- Input Box -->
-                    <form onsubmit="handleChatSubmit(event)" class="mt-3 flex items-center gap-2 pt-3 border-t border-sage/50 dark:border-darkborder">
-                        <input type="text" id="chat-input" autocomplete="off" name="chat_input_kaia" placeholder="Escribe lo que sientes o lo que tienes pendiente..." class="flex-1 bg-cream dark:bg-darkbg border border-sage dark:border-darkborder focus:border-moss focus:ring-1 focus:ring-moss rounded-xl px-4 py-3 text-sm text-forest dark:text-darktext placeholder-forest-soft/70 dark:placeholder-darkmuted/70 outline-none transition-all">
-                        <button type="submit" class="bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg p-3 rounded-xl font-semibold shadow-md transition-all">
-                            <i class="fa-solid fa-paper-plane text-base"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </section>
+                    <!-- gráficos -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- gráfico de estrés -->
+                        <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl">
+                            <h3 class="font-bold text-forest dark:text-darktext mb-4"><i class="fa-solid fa-chart-area text-moss mr-2"></i> Niveles de Estrés Percibido (Semana Actual)</h3>
+                            <div class="h-64 relative">
+                                <canvas id="stressChart"></canvas>
+                            </div>
+                        </div>
 
-
-        <!-- ================= TAB 2: DESGLOSE ANTI-CAOS ================= -->
-        <section id="tab-deconstruct" class="hidden space-y-6">
-            <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl">
-                <div class="max-w-2xl mb-6">
-                    <span class="text-xs uppercase tracking-widest text-forest dark:text-darktext font-semibold bg-moss/15 px-3 py-1 rounded-full border border-moss/30">
-                        Desglose Inteligente de Tareas
-                    </span>
-                    <h2 class="text-2xl font-bold text-forest dark:text-darktext mt-2">Transforma el caos en pasos ejecutables</h2>
-                    <p class="text-forest-soft dark:text-darkmuted text-sm mt-1">Escribe la entrega pesada o proyecto que te genera estrés y Kaia lo dividirá en micro-metas lógicas a pasos de tortuga.</p>
-                </div>
-
-                <!-- Form to input giant task -->
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" autocomplete="off" id="task-input" placeholder="Ej: Proyecto final de Programación / Ensayo de 10 páginas de Historia" class="flex-1 bg-cream dark:bg-darkbg border border-sage dark:border-darkborder focus:border-moss rounded-xl px-4 py-3 text-sm text-forest dark:text-darktext placeholder-forest-soft/70 dark:placeholder-darkmuted/70 outline-none">
-                    <button onclick="deconstructTask()" class="bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-semibold px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-forest/15">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Desglosar con IA
-                    </button>
-                </div>
-            </div>
-
-            <!-- Task Output Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Subtasks List -->
-                <div class="lg:col-span-8 bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl">
-                    <h3 class="font-bold text-lg text-forest dark:text-darktext mb-4 flex items-center justify-between">
-                        <span><i class="fa-solid fa-tasks text-moss mr-2"></i> Plan de Acción Sugerido</span>
-                        <span id="task-count-badge" class="text-xs bg-sage/50 dark:bg-darkborder text-forest dark:text-darktext px-2.5 py-1 rounded-full">0 Pasos</span>
-                    </h3>
-
-                    <div id="subtasks-container" class="space-y-3">
-                        <div class="text-center py-10 text-forest-soft dark:text-darkmuted border border-dashed border-sage dark:border-darkborder rounded-xl">
-                            <i class="fa-solid fa-layer-group text-3xl mb-2 text-moss"></i>
-                            <p class="text-sm">Ingresa una tarea pesada arriba para generar tu plan de ataque sin ansiedad.</p>
+                        <!-- gráfico de tareas -->
+                        <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl">
+                            <h3 class="font-bold text-forest dark:text-darktext mb-4"><i class="fa-solid fa-chart-bar text-moss mr-2"></i> Tareas Desglosadas vs Ansiedad Liberada</h3>
+                            <div class="h-64 relative">
+                                <canvas id="tasksChart"></canvas>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Pomodoro Timer Box -->
-                <div class="lg:col-span-4 bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xl">
-                    <span class="text-xs text-forest dark:text-darktext uppercase font-semibold tracking-wider">Temporizador de Foco Sin Presión</span>
-                    
-                    <div class="my-6">
-                        <div class="text-5xl font-extrabold text-forest dark:text-darktext font-mono tracking-tight" id="pomo-timer">25:00</div>
-                        <span class="text-xs text-forest-soft dark:text-darkmuted mt-1 block">Modo Enfoque Relajado</span>
+            </main>
+
+            <!-- pie de página -->
+            <footer class="bg-mist/60 dark:bg-darkcard/60 border-t border-sage/40 dark:border-darkborder py-5 px-4 text-xs text-forest-soft dark:text-darkmuted">
+                <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+                    <div>
+                        <p class="font-semibold text-forest dark:text-darktext">Kaia ("Como a pasos de tortuga") &bull; Asistente de Bienestar Estudiantil</p>
+                        <p class="mt-0.5">Todos los derechos reservados &copy; 2026 &mdash; Prototipo Funcional</p>
                     </div>
-
-                    <div class="flex items-center gap-3">
-                        <button id="pomo-btn" onclick="togglePomodoro()" class="bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-semibold px-5 py-2.5 rounded-xl shadow-md transition-all">
-                            <i class="fa-solid fa-play mr-1"></i> Iniciar
-                        </button>
-                        <button onclick="resetPomodoro()" class="bg-sage/50 dark:bg-darkborder hover:bg-sage/70 dark:hover:bg-darkborder/80 text-forest dark:text-darktext font-semibold px-4 py-2.5 rounded-xl transition-all">
-                            <i class="fa-solid fa-rotate-right"></i>
-                        </button>
+                    <div class="flex flex-col sm:items-end"> 
+                        <p class="leading-relaxed">Desarrollado por:<br><span class="font-semibold text-forest dark:text-moss">Anzony</span> — <span class="font-medium text-emerald-600 dark:text-emerald-400">Desarrollador Principal & Arquitectura</span><br><span class="font-semibold text-forest dark:text-moss">Mariana</span> — <span class="font-medium text-purple-600 dark:text-purple-400">Project Manager & Estrategia</span><br><span class="font-semibold text-forest dark:text-moss">Gabriela</span> — <span class="font-medium text-rose-600 dark:text-rose-400">Diseñadora UI/UX & Identidad Visual</span><br><span class="font-semibold text-forest dark:text-moss">Miguel</span> — <span class="font-medium text-amber-600 dark:text-amber-400">QA & Beta Tester</span></p>
                     </div>
                 </div>
-            </div>
-        </section>
-
-
-        <!-- ================= TAB 3: ESCUDO ANTI-BURNOUT (RESPIRACIÓN) ================= -->
-        <section id="tab-breathing" class="hidden space-y-6">
-            <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-8 shadow-xl text-center flex flex-col items-center justify-center min-h-[480px]">
-                <span class="text-xs uppercase tracking-widest text-forest dark:text-darktext font-semibold bg-moss/15 px-3 py-1 rounded-full border border-moss/30 mb-4">
-                    Técnica de Regulación 4-7-8
-                </span>
-                
-                <h2 class="text-2xl font-bold text-forest dark:text-darktext mb-2">Pausa Activa Anti-Ansiedad</h2>
-                <p class="text-forest-soft dark:text-darkmuted text-sm max-w-md mb-8">Esta técnica científicamente probada desacelera tu ritmo cardíaco y reduce la respuesta de estrés en el cerebro en menos de 2 minutos.</p>
-
-                <!-- Interactive Breathing Visualizer -->
-                <div class="my-8 flex items-center justify-center relative">
-                    <div id="breath-visualizer" class="breath-circle">
-                        <span id="breath-status-text" class="text-lg font-bold text-forest dark:text-darktext uppercase tracking-wider">Listo</span>
-                    </div>
-                </div>
-
-                <!-- Action Button -->
-                <div class="flex items-center gap-4 mt-4">
-                    <button id="start-breath-btn" onclick="toggleBreathingCycle()" class="px-8 py-3.5 bg-forest hover:bg-forest-soft dark:bg-moss dark:hover:bg-moss/80 text-cream dark:text-darkbg font-bold rounded-xl shadow-lg shadow-forest/20 transition-all text-base">
-                        <i class="fa-solid fa-wind mr-2"></i> Iniciar Ejercicio
-                    </button>
-                </div>
-            </div>
-        </section>
-
-
-        <!-- ================= TAB 4: MÉTRICAS DE ESTRÉS ================= -->
-        <section id="tab-dashboard" class="hidden space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Stat Card 1 -->
-                <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-5 shadow-xl">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-forest-soft dark:text-darkmuted uppercase">Reducción de Estrés</span>
-                        <div class="w-8 h-8 rounded-lg bg-moss/15 text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-arrow-trend-down"></i></div>
-                    </div>
-                    <div class="text-3xl font-bold text-forest dark:text-darktext mt-2">-42%</div>
-                    <span class="text-xs text-forest dark:text-darkmuted font-medium block mt-1"><i class="fa-solid fa-circle-check mr-1"></i> Respecto a la semana anterior</span>
-                </div>
-
-                <!-- Stat Card 2 -->
-                <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-5 shadow-xl">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-forest-soft dark:text-darkmuted uppercase">Tiempo de Foco Saludable</span>
-                        <div class="w-8 h-8 rounded-lg bg-sage/40 dark:bg-darkborder text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-clock"></i></div>
-                    </div>
-                    <div class="text-3xl font-bold text-forest dark:text-darktext mt-2">14.5 hrs</div>
-                    <span class="text-xs text-forest dark:text-darkmuted font-medium block mt-1"><i class="fa-solid fa-shield-halved mr-1"></i> Con pausas activas</span>
-                </div>
-
-                <!-- Stat Card 3 -->
-                <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-5 shadow-xl">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-forest-soft dark:text-darkmuted uppercase">Sesiones de Desahogo</span>
-                        <div class="w-8 h-8 rounded-lg bg-forest/10 dark:bg-darkborder text-forest dark:text-darktext flex items-center justify-center"><i class="fa-solid fa-heart-pulse"></i></div>
-                    </div>
-                    <div class="text-3xl font-bold text-forest dark:text-darktext mt-2">8 Sesiones</div>
-                    <span class="text-xs text-forest dark:text-darkmuted font-medium block mt-1"><i class="fa-solid fa-sparkles mr-1"></i> Impacto empático positivo</span>
-                </div>
-            </div>
-
-            <!-- Charts Row -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Stress Level Chart -->
-                <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl">
-                    <h3 class="font-bold text-forest dark:text-darktext mb-4"><i class="fa-solid fa-chart-area text-moss mr-2"></i> Niveles de Estrés Percibido (Semana Actual)</h3>
-                    <div class="h-64 relative">
-                        <canvas id="stressChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Task Completion vs Anxiety -->
-                <div class="bg-mist/70 dark:bg-darkcard border border-sage/50 dark:border-darkborder rounded-2xl p-6 shadow-xl">
-                    <h3 class="font-bold text-forest dark:text-darktext mb-4"><i class="fa-solid fa-chart-bar text-moss mr-2"></i> Tareas Desglosadas vs Ansiedad Liberada</h3>
-                    <div class="h-64 relative">
-                        <canvas id="tasksChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Footer con Derechos y Créditos -->
-    <footer class="bg-mist/60 dark:bg-darkcard/60 border-t border-sage/40 dark:border-darkborder py-5 px-4 text-xs text-forest-soft dark:text-darkmuted">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
-            <div>
-                <p class="font-semibold text-forest dark:text-darktext">Kaia ("Como a pasos de tortuga") &bull; Asistente de Bienestar Estudiantil</p>
-                <p class="mt-0.5">Todos los derechos reservados &copy; 2026 &mdash; Prototipo Funcional</p>
-            </div>
-            <div class="flex flex-col sm:items-end"> 
-                <p class="leading-relaxed">Desarrollado por:<br><span class="font-semibold text-forest dark:text-moss">Anzony</span> — <span class="font-medium text-emerald-600 dark:text-emerald-400">Desarrollador Principal & Arquitectura</span><br><span class="font-semibold text-forest dark:text-moss">Mariana</span> — <span class="font-medium text-purple-600 dark:text-purple-400">Project Manager & Estrategia</span><br><span class="font-semibold text-forest dark:text-moss">Gabriela</span> — <span class="font-medium text-rose-600 dark:text-rose-400">Diseñadora UI/UX & Identidad Visual</span><br><span class="font-semibold text-forest dark:text-moss">Miguel</span> — <span class="font-medium text-amber-600 dark:text-amber-400">QA & Beta Tester</span></p>
-            </div>
+            </footer>
         </div>
-    </footer>
+    </div>
 
-    <!-- MÓDULO 3: Modal de líneas de apoyo -->
+
+    <!-- modal de líneas de apoyo -->
     <div id="help-modal" class="hidden fixed inset-0 z-[100]" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
         <div class="min-h-full flex items-center justify-center p-4 bg-forest/70 dark:bg-darkbg/80 backdrop-blur-sm" onclick="if (event.target === this) closeHelpModal()">
             <div class="relative w-full max-w-md bg-mist dark:bg-darkcard border border-sage dark:border-darkborder rounded-2xl p-6 shadow-2xl">
@@ -563,9 +796,9 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- lógica -->
     <script>
-        // State Variables
+        // estado
         let isListening = false;
         let isSpeaking = false;
         let isPomodoroRunning = false;
@@ -575,7 +808,7 @@
         let isBreathingActive = false;
         let selectedVoiceGender = 'female'; 
 
-        // Web Speech API Initialization
+        // reconocimiento de voz
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition = null;
         const synth = window.speechSynthesis;
@@ -626,7 +859,7 @@
             document.getElementById('voice-status-badge').innerHTML = '<i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Voz no soportada';
         }
 
-        // ---- Control de Modo Oscuro ----
+        // modo oscuro
         function toggleDarkMode() {
             const htmlEl = document.documentElement;
             const iconEl = document.getElementById('dark-mode-icon');
@@ -638,12 +871,12 @@
                 htmlEl.classList.add('dark');
                 iconEl.className = 'fa-solid fa-sun text-xs text-amber-400';
             }
-            try { localStorage.setItem('kaia_theme', goingLight ? 'light' : 'dark'); } catch (err) { /* sin almacenamiento */ }
+            try { localStorage.setItem('kaia_theme', goingLight ? 'light' : 'dark'); } catch (err) { }
         }
 
         (function() {
             let savedTheme = null;
-            try { savedTheme = localStorage.getItem('kaia_theme'); } catch (err) { /* sin almacenamiento */ }
+            try { savedTheme = localStorage.getItem('kaia_theme'); } catch (err) { }
             const iconEl = document.getElementById('dark-mode-icon');
             if (savedTheme === 'light') {
                 document.documentElement.classList.remove('dark');
@@ -654,7 +887,7 @@
             }
         })();
 
-        // ---- Selección y Síntesis de Voz ----
+        // voz de kaia
         const normVoiceName = (str) => (str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         const VOICE_HINTS = {
             female: ['Mónica', 'Sabina', 'Helena', 'Google español', 'Laura', 'Elvira', 'Dalia', 'Paulina', 'Lucía', 'Elena'].map(normVoiceName),
@@ -715,6 +948,7 @@
             synth.speak(utterance);
         }
 
+        // modal de ayuda
         function showHelpModal() {
             document.getElementById('help-modal').classList.remove('hidden');
         }
@@ -723,6 +957,7 @@
             document.getElementById('help-modal').classList.add('hidden');
         }
 
+        // detener voz
         function stopVoice() {
             if (synth) synth.cancel();
             if (recognition && isListening) recognition.stop();
@@ -731,8 +966,7 @@
             updateOrbState('calm', 'Kaia está lista', 'Voz detenida.');
         }
 
-        // Cambia el estado del avatar: 'calm' (reposo) | 'speaking' | 'listening' | 'thinking'
-        // El movimiento de cada estado está en el CSS (.avatar-stage.speaking, etc.)
+        // estado del avatar
         function updateOrbState(state, title, desc) {
             const stage = document.getElementById('sura-orb');
             const titleEl = document.getElementById('sura-state-title');
@@ -748,6 +982,7 @@
             if (input) input.value = '';
         }
 
+        // micrófono
         async function toggleMic() {
             if (!recognition) {
                 updateOrbState('calm', 'Voz no disponible', 'Usa Chrome o Edge, o escribe tus mensajes.');
@@ -781,6 +1016,7 @@
             }
         }
 
+        // pestañas
         function switchTab(tabId) {
             ['assistant', 'deconstruct', 'breathing', 'dashboard'].forEach(id => {
                 document.getElementById('tab-' + id).classList.add('hidden');
@@ -801,6 +1037,7 @@
             if (tabId === 'dashboard') initCharts();
         }
 
+        // envío de mensajes
         function handleChatSubmit(e) {
             e.preventDefault();
             const input = document.getElementById('chat-input');
@@ -814,9 +1051,10 @@
             processUserMessage(promptText);
         }
 
+        // historial y guardado del chat
         let chatHistory = [];
         let isWaitingReply = false;
-        let aiNoticeShown = false; // aviso de "sin IA" (una vez por caída)
+        let aiNoticeShown = false;
         let initialGreetingHTML = '';
         let pendingResumeHistory = null;
         let resumeOptionsEl = null;
@@ -827,7 +1065,7 @@
         function cleanMessages(list) {
             if (!Array.isArray(list)) return [];
             return list.filter(m => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string' && m.content.trim() !== ''
-                && !(m.role === 'assistant' && m.content.trim() === 'No pude responder.')); // restos de fallos antiguos
+                && !(m.role === 'assistant' && m.content.trim() === 'No pude responder.'));
         }
 
         function setAutosaveStatus(ok) {
@@ -929,8 +1167,7 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        // ¿El mensaje corto es la respuesta a "¿reanudar o empezar de cero?"? Devuelve 'resume', 'new' o null.
-        // Es deliberadamente estricto con "new" (borra lo guardado) para no confundirlo con un mensaje normal.
+        // detección de respuesta a "reanudar o empezar de cero"
         function detectResumeChoice(text) {
             const t = (text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
             if (t.length > 40) return null;
@@ -939,20 +1176,20 @@
             return null;
         }
 
+        // procesamiento del mensaje (llama a /api/chat)
         async function processUserMessage(userMsg) {
             if (isWaitingReply) return;
             isWaitingReply = true;
             await persistenceReady;
             if (pendingResumeHistory) {
-                // La pregunta de reanudar también se puede contestar escribiendo ("reanudar", "de cero").
-                // Si la persona escribe otra cosa sin elegir, se empieza una conversación NUEVA.
+                // respuesta a la pregunta de reanudar
                 const choice = detectResumeChoice(userMsg);
                 if (choice === 'resume') resumeChat();
                 else startNewChat();
                 if (choice) {
                     isWaitingReply = false;
                     updateOrbState('calm', 'Kaia está lista', 'Presiona el micrófono o escribe para conversar.');
-                    return; // era la respuesta a la pregunta, no un mensaje para la IA
+                    return;
                 }
             }
 
@@ -970,15 +1207,15 @@
                 });
                 if (!res.ok) {
                     let msg = '';
-                    try { const e = await res.json(); if (e && e.error) msg = e.error; } catch (err) { /* sin detalle */ }
+                    try { const e = await res.json(); if (e && e.error) msg = e.error; } catch (err) { }
                     throw new Error(msg);
                 }
                 const data = await res.json();
                 if (typeof data.reply !== 'string' || !data.reply.trim()) throw new Error('respuesta vacía');
                 reply = data.reply;
-                aiNoticeShown = false; // la IA volvió a responder
+                aiNoticeShown = false;
             } catch (err) {
-                // Sin IA: se usa la respuesta básica y se avisa una vez, con el motivo si el servidor lo dio
+                // respaldo sin ia
                 console.warn('Chat sin IA:', err.message);
                 showAiOfflineNotice(err && err.name === 'TypeError' ? 'sin conexión con el servidor' : err.message);
                 reply = generateEmpatheticResponse(userMsg);
@@ -1000,7 +1237,7 @@
             else updateOrbState('calm', 'Kaia está lista', 'Lista.');
         }
 
-        // Aviso discreto (solo visual, no se guarda) cuando el chat responde sin la IA
+        // aviso de ia no disponible
         function showAiOfflineNotice(reason) {
             if (aiNoticeShown) return;
             aiNoticeShown = true;
@@ -1017,6 +1254,7 @@
             return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
+        // mensajes en pantalla
         function appendChatMessage(sender, text) {
             const messagesContainer = document.getElementById('chat-messages');
             const msgDiv = document.createElement('div');
@@ -1045,6 +1283,7 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
+        // detección de crisis y respuestas básicas
         const CRISIS_TERMS = ['suicid', 'quitar la vida', 'matarme', 'no quiero vivir', 'quiero morir', 'hacerme dano'];
         function isCrisisText(text) {
             const t = (text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -1070,6 +1309,7 @@
             ]);
         }
 
+        // desglose anti-caos (llama a /api/deconstruct)
         async function deconstructTask() {
     const taskInput = document.getElementById('task-input');
     const task = taskInput.value.trim();
@@ -1092,7 +1332,7 @@
 
         if (!res.ok) {
             let msg = 'Error en el servidor';
-            try { const e = await res.json(); if (e && e.error) msg = e.error; } catch (err) { /* sin detalle */ }
+            try { const e = await res.json(); if (e && e.error) msg = e.error; } catch (err) { }
             throw new Error(msg);
         }
         const data = await res.json();
@@ -1128,6 +1368,7 @@
     }
 }
 
+        // temporizador de foco
         function togglePomodoro() {
             const btn = document.getElementById('pomo-btn');
             if (isPomodoroRunning) {
@@ -1165,6 +1406,7 @@
             document.getElementById('pomo-timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
+        // ejercicio de respiración
         function toggleBreathingCycle() {
             const visualizer = document.getElementById('breath-visualizer');
             const statusText = document.getElementById('breath-status-text');
@@ -1204,6 +1446,7 @@
             runCycle();
         }
 
+        // gráficos de métricas
         let chartsInitialized = false;
         function initCharts() {
             if (chartsInitialized) return;
@@ -1259,6 +1502,7 @@
             });
         }
 
+        // eventos
         document.getElementById('voice-select').addEventListener('change', (e) => {
             selectedVoiceGender = e.target.value === 'male' ? 'male' : 'female';
             speakText('Hola, así sueno ahora.');
@@ -1268,6 +1512,7 @@
             if (e.key === 'Escape') closeHelpModal();
         });
 
+        // carga inicial
         const startPersistence = () => {
             persistenceReady = initChatPersistence().catch(() => {});
         };
@@ -1275,6 +1520,54 @@
             document.addEventListener('DOMContentLoaded', startPersistence);
         } else {
             startPersistence();
+        }
+
+        // navegación homepage / app
+        let viewBusy = false;
+
+        function afterAnimation(el, done) {
+            let finished = false;
+            const finish = () => {
+                if (finished) return;
+                finished = true;
+                el.removeEventListener('animationend', onEnd);
+                done();
+            };
+            const onEnd = (e) => { if (e.target === el) finish(); };
+            el.addEventListener('animationend', onEnd);
+            setTimeout(finish, 700);
+        }
+
+        function switchView(fromEl, toEl, onShown) {
+            if (viewBusy) return;
+            viewBusy = true;
+            fromEl.classList.add('view-leave');
+            afterAnimation(fromEl, () => {
+                fromEl.classList.remove('view-leave');
+                fromEl.classList.add('hidden');
+                toEl.classList.remove('hidden');
+                toEl.classList.add('view-enter');
+                window.scrollTo(0, 0);
+                if (onShown) onShown();
+                afterAnimation(toEl, () => {
+                    toEl.classList.remove('view-enter');
+                    viewBusy = false;
+                });
+            });
+        }
+
+        function enterApp() {
+            switchView(document.getElementById('home-view'), document.getElementById('app-view'), () => {
+                const chat = document.getElementById('chat-messages');
+                chat.scrollTop = chat.scrollHeight;
+            });
+        }
+
+        function goHome() {
+            closeHelpModal();
+            if (isSpeaking || isListening) stopVoice();
+            if (isBreathingActive) toggleBreathingCycle();
+            switchView(document.getElementById('app-view'), document.getElementById('home-view'));
         }
     </script>
 </body>
